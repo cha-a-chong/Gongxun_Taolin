@@ -32,7 +32,7 @@ Core/Src/fdcan.o: ../Core/Src/fdcan.c ../Core/Inc/fdcan.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h
+ ../Core/Inc/Bool.h ../Core/Inc/usart.h ../Core/Inc/gpio.h
 ../Core/Inc/fdcan.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
@@ -68,5 +68,6 @@ Core/Src/fdcan.o: ../Core/Src/fdcan.c ../Core/Inc/fdcan.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
+../Core/Inc/Bool.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
