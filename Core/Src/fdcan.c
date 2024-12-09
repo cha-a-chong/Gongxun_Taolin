@@ -216,7 +216,9 @@ void FDCAN_Send_Msg(uint8_t *msg, uint32_t len) {
 //}
 
 // ---- FIFO接收中断回调函数：用于到位回读，判断步进电机是否到位----
-// HACK:该判断缺少对步进电机ID帧的判断,但rxdata数组中似乎并没有储存地址帧
+// FIXME:该判断缺少对步进电机ID帧的判断,但rxdata数组中似乎并没有储存地址帧
+// 解决进度: 在一帧数据中，数据的发送方使用fdcan_RxHeader.Identifier进行存储，
+//         其值应当除以256以获得十进制下的步进电机序号值
 // 定义一个u8类型的数组变量rxdata用于存储接收到的数据
 uint8_t  rxdata[8];
 // 定义一个静态变量RxState，用于记录接收状态
@@ -231,6 +233,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	if (Emm_mode == 0) {
 		RxState = 0;
 	}
+
 // Emm_mode为1，进入接收状态机
 	if (Emm_mode == 1) {
 		if (RxState == 0) {
