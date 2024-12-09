@@ -8,3 +8,9 @@
 *.cyclo
 *.map
 *.list
+**/*.o
+**/*.su
+**/*.cyclo
+**/*.map
+**/*.list
+Debug/Hardware/Time/Time.o

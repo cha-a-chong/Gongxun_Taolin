@@ -115,6 +115,48 @@ bool Move_Left(u16 speed, u8 acc, u32 length) {
 	return true;
 }
 
+bool Move_Back(u16 speed, u8 acc, u32 length) {
+	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
+	if(Choke_Flag == true)
+		return  false;
+	else
+		Choke_Flag = true;
+	// 无阻塞操作，申请阻塞
+	Apply_Chock = true;
+	// 底盘步进电机移动
+	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	// 使能阻塞定时器中断
+	HAL_TIM_Base_Start_IT(&htim12);
+	Call_Flag = true;
+	return true;
+}
+
+bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)  {
+	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
+	if(Choke_Flag == true)
+		return  false;
+	else
+		Choke_Flag = true;
+	// 无阻塞操作，申请阻塞
+	Apply_Chock = true;
+	// 底盘步进电机移动
+	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	// 使能阻塞定时器中断
+	HAL_TIM_Base_Start_IT(&htim12);
+	Call_Flag = true;
+	return true;
+}
+
 // void Move_Left(u16 speed, u8 acc, u32 length) {
 // 	int time;
 // 	time = length / speed * 20;  //毫秒
@@ -135,24 +177,24 @@ bool Move_Left(u16 speed, u8 acc, u32 length) {
 // 	HAL_Delay(30);
 // }
 
-void Move_Back(u16 speed, u8 acc, u32 length) {
-	int time;
-	time = length / speed * 20;  //毫秒
-	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+// void Move_Back(u16 speed, u8 acc, u32 length) {
+// 	int time;
+// 	time = length / speed * 20;  //毫秒
+// 	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 
-	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
+// 	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
 
 
-	Emm_mode = 1;
-	time5_jiancha = (time + 800) / 10;
-	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
-		;
-//	RxFlag = 0;
-	HAL_Delay(30);
-}
+// 	Emm_mode = 1;
+// 	time5_jiancha = (time + 800) / 10;
+// 	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
+// 		;
+// //	RxFlag = 0;
+// 	HAL_Delay(30);
+// }
 
 void Move_Right(u16 speed, u8 acc, u32 length) {
 	int time;
@@ -190,26 +232,26 @@ void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
 	HAL_Delay(30);
 }
 
-void Move_fanxuzhuan(u16 speed, u8 acc, u32 length) //4340是90度
-{
-	int time;
-	time = length / speed * 20;  //毫秒
-
-	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
-	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
-
-	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
-
-
-	Emm_mode = 1;
-	time5_jiancha = (time + 800) / 10;
-	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
-		;
-//	RxFlag = 0;
-	HAL_Delay(30);
-}
+//void Move_fanxuzhuan(u16 speed, u8 acc, u32 length) //4340是90度
+//{
+//	int time;
+//	time = length / speed * 20;  //毫秒
+//
+//	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+//
+//	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
+//
+//
+//	Emm_mode = 1;
+//	time5_jiancha = (time + 800) / 10;
+//	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
+//		;
+////	RxFlag = 0;
+//	HAL_Delay(30);
+//}
 uint16_t High_Length=0;
 //void Move_Xiajiang(u16 speed, u8 acc, u32 length) {
 //	int time;
@@ -342,10 +384,16 @@ void Move_TO_yuanliaoqu(float Lineclk) //物料区
 
 void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 {
-	Move_Back(RunSpeed, RunAcc, Backclk);
-	HAL_Delay(yanshi);
-	Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
-	HAL_Delay(yanshi);
+	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	while(temp != true)
+	{
+		temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	}
+	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	while(temp != true)
+	{
+		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	}
 }
 
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区

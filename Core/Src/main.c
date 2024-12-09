@@ -217,88 +217,20 @@ int main(void)
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		//	while(1)
-		//	{
-		//		if(Joy_Flag == 1)
-		//			break;
-		//		else if (System_Flag == 1)
-		//		{
-		////			HAL_TIM_Base_Start_IT(&htim3);
-		////		    初始化PID参数
-		//			PID_Init();
-		//			break;
-		//		}
-		//	}
-//		while (1) {
-//			if (Joy_Flag == 1) {
-//				Check_Joydata();
-//				HAL_Delay(100);
-//			}
-//		}
+// 		按下准备发车后进入该段函数
 		if (Ready_Flag == 1)
 		{
 			Ready_Flag = 0;
 //			整定车身
 			Check_Status();
 		}
+// 		按下发车后进入该段函数
 		if (System_Flag == 1)
 		{
 			System_Flag = 0;
-//			向TX2发�?�字符串"e1f"
-			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,
-					0x1000);
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//			Start();  //步进电机在最低处
-//			catch_Frist(860, 2375);  //上下同等
-//			catch_Frist(1910, 2370);  //上下同等
-//			catch_Frist(2960, 2370);  //上下同等
-//			Drop_Location_jiang(50, 50, 11000);
-//			put(2150, 2680);
-//			HAL_Delay(2000);
-//			put(3205, 2680);
-//			HAL_Delay(2000);
-//
-//			put(2960, 2370);
-//			HAL_Delay(2000);
-//			catch_Second(860, 2375);
-//			catch_Second(1910, 2370);  //上下同等
-//			catch_Second(2960, 2370);  //上下同等
-//			while(1);
-//			//
-//			while(1);
-
-//			x_goal = 100;
-//
-//			y_goal = 50;
-//
-//			while (1) {               //ACTION调整
-//				if ((X_NOW - x_goal) < 0) {
-//						Move_Left(100, 100, ABS(X_NOW - x_goal)*13.8);
-//						HAL_Delay(yanshi);
-//					} else {
-//						Move_Right(100, 100, ABS(X_NOW - x_goal)*13.8);
-//						HAL_Delay(yanshi);
-//					}
-//					if (Y_NOW - y_goal < 0) {
-//						Move_Line(100, 100, ABS(Y_NOW - y_goal)*13.8);
-//						HAL_Delay(yanshi);
-//					} else {
-//						Move_Back(100, 100, ABS(Y_NOW - y_goal)*13.8);
-//						HAL_Delay(yanshi);
-//					}
-//
-//				if ( ABS(X_NOW - x_goal) < 2 && ABS(Y_NOW - y_goal) < 2) {
-//					break; /* 到达目标 */
-//				}
-//			}
-//			Move_Xiajiang(100,100,14000);
-//			HAL_Delay(2000);
-
-//			Move_Left(50,50,8000);
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/***********************运行逻辑-状�?�机*************************/
+//			向TX2发送字符串"e1f"
+			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,0x1000);
+			/***********************进入运行逻辑状态机*************************/
 			while (1)
 			{
 				switch (flag)
@@ -311,9 +243,8 @@ int main(void)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}    
-					Start();    //5400�?
+					Start();
 					flag = 1;
-					temp=false;
 					break;
 //					Drop_Location_jiang(200, 120, 4000);
 				case 1:  //离开扫码区，进入原料�?
@@ -321,28 +252,27 @@ int main(void)
 					temp = Move_Line(RunSpeed, RunAcc, 10500);
 					while(temp != true)
 					{
+// 						如果该段被阻塞，则一直重发
 						temp = Move_Line(RunSpeed, RunAcc, 10500);
 					}
-//					Move_TO_yuanliaoqu(10500);
 //					Choke_Flag = false确定Move_Line已经执行完毕，可以开始进入PID整定阶段
 					while(Choke_Flag == true)
 					{
 						;
 					}
-//					X参�??150 Y参�??1430
-//					Move_Action_Nopid_Left_Ctrl(150, 1455);  //ACTION调整
-//					�?查TX2是否传�?�物料�??
+//					Action点位调整 X参数150 Y参数1455
+//					Move_Action_Nopid_Left_Ctrl(150, 1455);
+//					检查TX2是否传递物料点位信息
 					while (Point_Flag != 1)
 					{
-						;  //如果Point_Flag值不�?1,则在此处等待
+						;  //如果Point_Flag值不为1,即没有识别到物料，则进入等待状态
 					}
-//					TODO:应该在物料抓取函数中实现基于TX2的物料点位闭�?
+//					TODO:应该在物料抓取函数中实现基于TX2的物料点位闭环
 //					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
 
-				case 2:  //离开原料区，进入加工�?
-
+				case 2:  //离开原料区，进入十字前方，进行姿态校准
 					Move_TO_jianzhi1(4500, 4335);
 					Roll_Status();
 					HAL_Delay(50);
