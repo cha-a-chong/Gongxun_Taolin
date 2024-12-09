@@ -307,12 +307,13 @@ int main(void)
 //					X轴建议移动到150左右
 					// Move_TO_Saomaqu(2400, 8250);
 					bool temp = Move_Left(RunSpeed, RunAcc, 2400);
-					while(temp != 0)
+					while(temp != true)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}    
-					Start();    //5400�?
 					Move_Line(RunSpeed, RunAcc, 8250);
+					Start();    //5400�?
+					
 					flag = 1;
 					break;
 //					Drop_Location_jiang(200, 120, 4000);

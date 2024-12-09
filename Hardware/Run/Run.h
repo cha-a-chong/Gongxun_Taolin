@@ -19,7 +19,8 @@
 
 extern int time5_jiancha;
 //位置模式
-void Move_Line(u16 speed, u8 acc, u32 length);
+// void Move_Line(u16 speed, u8 acc, u32 length);
+bool Move_Line(u16 speed, u8 acc, u32 length);
 bool Move_Left(u16 speed, u8 acc, u32 length);
 //void Move_Left(u16 speed, u8 acc, u32 length);
 void Move_Back(u16 speed, u8 acc, u32 length);
