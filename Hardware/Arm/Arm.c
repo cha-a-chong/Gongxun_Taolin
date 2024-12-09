@@ -12,6 +12,11 @@ int Grab_count;
 #define Emm_Speed  50     //步进电机
 #define Emm_Acc  50
 #define Max_High 12000
+
+// extern
+extern float tx_target;
+extern float ty_target;
+
 //控制单个舵机运动
 //参数：sevoID:舵机ID，Position:转动角度（这里以270°为例）,Time:转动时间
 void Move_Arm(uint8_t servoID, int16_t Position, uint16_t Time) {
@@ -111,10 +116,12 @@ void Start(void) //下降14000
 //	HAL_Delay(2000);
 	Drop_Location_jiang(200, 120, 12000);
 	Move_Arm(1, 500, 300); //爪子张开
+	Move_Arm(6, 500, 300);
 	while (!QR_Flag)
 		;  //等待扫码完成
 //	扫码完成后将爪子提起俩
 	Drop_Location_jiang(200, 120, 8600);
+	Move_Arm(6, 900, 300);
 }
 void put(uint16_t Pos1, uint16_t Pos2) {
 	WritePosEx(0, Pos1, 1000, 100); //物料底盘移动
@@ -162,6 +169,7 @@ void put_second(uint16_t Pos1, uint16_t Pos2) {
 
 extern int QR_data[6];
 void Realize_Stop() {
+//	FIXME:有BUG
 	float err_x, err_y;
 
 	while (1) {
@@ -172,35 +180,139 @@ void Realize_Stop() {
 		}
 	}
 }
-
+// 抓取过程标志位
+extern char Match_Flag;
+// 抓取计算稳定性标志位，0为识别有故障,1为正常计算
+extern char Check_flag;
 void Frist_Grab_Wuliao(void) {
-	static uint8_t Grab_count = 0;
-	while (Grab_count < 3) {
-		if (QR_data[0] == colour && wuliao_falg == 0) {
-			Realize_Stop();
-			catch_Frist(860, 2375);
-			wuliao_falg = 1;
-			Grab_count += 1;
-		}
-		if (QR_data[1] == colour && wuliao_falg == 1) {
-			Realize_Stop();
-			catch_Frist(1910, 2370);
-			wuliao_falg = 2;
-			Grab_count += 1;
-		}
-		if (QR_data[2] == colour && wuliao_falg == 2) {
-			Realize_Stop();
+//	FIXME:在每一次抓取前都应该判断物料停止与基于TX2坐标闭环
+//	Move_Tx_Pid_Ctrl(tx_target, ty_target); //TX调整
+	static uint8_t Grab_count = 1;
+	while (Grab_count < 4) {
+//		抓取物料过程，置标志位,标志位为颜色
+		Match_Flag = Grab_count;
+//		if (QR_data[0] == colour && wuliao_falg == 0) {
+//			先判断物料是否停止
+			while(Check_Stability(x,y,Check_flag) == 2)
+			{
+				HAL_Delay(30);
+			}
+//			Realize_Stop();
+//			基于TX2坐标进行闭环
+			Move_Tx_Pid_Ctrl(tx_target, ty_target);
+//			抓取第一个物料
+//			物料盘先转动到目标位置
+			FT_Servo_Put(0,Grab_count);
 
-
-//(2960, 2370);
-			wuliao_falg = 0;
+			Move_Arm(1, 50, 300);
+//			上升
+			Drop_Location_jiang(200, 120, 1000);
+//			catch_Frist(860, 2375);
+//			爪子舵机转动到放置物料到车上的角度
+			FT_Servo_Put(1,Grab_count);
+//			TODO:调试，失能五号舵机
+			Drop_Location_jiang(200, 120, 6000);
+//			Emm_V5_En_Control(5,false,false);
+//			while(1)
+//			{
+//				;
+//			}
+//			松开爪子
+			Move_Arm(1, 300, 300);
+//			上升
+			Drop_Location_jiang(200, 120, 1000);
+//			向右转，与车身正交
+			if(Grab_count < 3)
+				FT_Servo_Orth();
+			else
+				FT_Servo_Zero(1);
 			Grab_count += 1;
-		}
-
 	}
+	Grab_count = 0;
 }
 
-extern int tx_target, ty_target;
+//		if (Grab_count == 2) {
+////			下降到目标高度
+//			Drop_Location_jiang(200, 120, 8600);
+////			先判断物料是否停止
+//			Realize_Stop();
+////			抓取第一个物料
+////			物料盘先转动到目标位置
+//			FT_Servo_Put(0,2);
+////			抓取物料
+//			Move_Arm(1, 50, 300);
+////			上升
+//			Drop_Location_jiang(200, 120, 1000);
+////			catch_Frist(860, 2375);
+////			爪子舵机转动到放置物料到车上的角度
+//			FT_Servo_Put(1,1);
+////			TODO:调试，失能五号舵机
+//			Drop_Location_jiang(200, 120, 6000);
+////			Emm_V5_En_Control(5,false,false);
+////			while(1)
+////			{
+////				;
+////			}
+////			松开爪子
+//			Move_Arm(1, 300, 300);
+////			上升
+//			Drop_Location_jiang(200, 120, 1000);
+////			向右转，与车身正交
+//			FT_Servo_Orth();
+//			FT_Servo_Put(0,2);
+//			wuliao_falg = 1;
+//			Grab_count += 1;
+//		}
+//		if (Grab_count == 3) {
+////			下降到目标高度
+//			Drop_Location_jiang(200, 120, 8600);
+////			先判断物料是否停止
+//			Realize_Stop();
+////			抓取第一个物料
+////			物料盘先转动到目标位置
+//			FT_Servo_Put(0,3);
+////			抓取物料
+//			Move_Arm(1, 50, 300);
+////			上升
+//			Drop_Location_jiang(200, 120, 1000);
+////			catch_Frist(860, 2375);
+////			爪子舵机转动到放置物料到车上的角度
+//			FT_Servo_Put(1,1);
+////			TODO:调试，失能五号舵机
+//			Drop_Location_jiang(200, 120, 6000);
+////			Emm_V5_En_Control(5,false,false);
+////			while(1)
+////			{
+////				;
+////			}
+////			松开爪子
+//			Move_Arm(1, 300, 300);
+////			上升
+//			Drop_Location_jiang(200, 120, 1000);
+////			向右转，与车身正交
+//			FT_Servo_Orth();
+//			FT_Servo_Put(0,2);
+//			wuliao_falg = 1;
+//			return 0;
+//		}
+////		if (QR_data[1] == colour && wuliao_falg == 1) {
+////			Realize_Stop();
+////			catch_Frist(1910, 2370);
+////			wuliao_falg = 2;
+////			Grab_count += 1;
+////		}
+////		if (QR_data[2] == colour && wuliao_falg == 2) {
+////			Realize_Stop();
+////
+////
+//////(2960, 2370);
+////			wuliao_falg = 0;
+////			Grab_count += 1;
+////		}
+//
+//	}
+//}
+
 void put_wuliao_to_circular_frist(void) {
 
 	for (int i = 0; i < 3; i++) {

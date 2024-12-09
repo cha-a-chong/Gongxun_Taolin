@@ -105,7 +105,10 @@ void QR_Show(void) {
 //}
 
 
-
+// 抓取过程标志位，值为目标颜色
+extern char Match_Flag;
+// 抓取计算稳定性标志位，0为识别有故障,1为正常计算
+extern char Check_flag;
 // TODO：屏幕缺失字符"+",暂时判断为编码格式问题，需要通过串口助手确定编码格式
 void Point_Show(void) {
 	if(Point_Flag == 0)
@@ -114,6 +117,11 @@ void Point_Show(void) {
 		return ;
 	}
 	Point_Flag = 0;
+//	在抓取过程中,进行颜色校验，如果颜色与抓取目标颜色不同，则放弃该帧数据，并传递放弃稳定性计算标志位
+	if(Match_Flag != colour)
+		Check_flag = 0;
+	else
+		Check_flag = 1;
 	sprintf(TX2_X_Point, "%.2f", x);
 	sprintf(TX2_Y_Point, "%.2f", y);
 	sprintf(TX2_Color, "%d", colour);

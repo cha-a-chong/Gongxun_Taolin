@@ -28,11 +28,21 @@ double calculate_variance(double data[], int n) {
 }
 
 //  使用方差判断稳定性
-uint8_t Check_Stability(float check_x,float check_y)
+uint8_t Check_Stability(float check_x,float check_y,uint8_t Check_flag)
 {
 	static float data_x[10];
 	static float data_y[10];
 	static uint8_t frequency = 0;
+//	不满足计算稳定性的条件，清空缓冲区并结束
+	if(Check_flag != 1)
+	{
+		for(int i = 0;i<10;i++)
+		{
+			data_x[i] = 0;
+			data_y[i] = 0;
+		}
+		return 1;
+	}
 	if(frequency <= 9)
 	{
 		data_x[frequency] = check_x;
@@ -43,7 +53,7 @@ uint8_t Check_Stability(float check_x,float check_y)
 //	显式类型转换，调用函数获得方差
 	double variance_x = calculate_variance((double*)data_x, 10);
 	double variance_y = calculate_variance((double*)data_y, 10);
-	if((variance_x > 5) || (variance_y >5))
+	if((variance_x > 2) || (variance_y >2))
 	{
 //		1说明还未稳定
 		return 1;
