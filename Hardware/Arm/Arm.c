@@ -190,43 +190,46 @@ void Frist_Grab_Wuliao(void) {
 	static uint8_t Grab_count = 1;
 	while (Grab_count < 4) {
 //		抓取物料过程，置标志位,标志位为颜色
-		Match_Flag = Grab_count;
+	Match_Flag = Grab_count;
 //		if (QR_data[0] == colour && wuliao_falg == 0) {
 //			先判断物料是否停止
-			while(Check_Stability(x,y,Check_flag) == 2)
-			{
-				HAL_Delay(30);
-			}
+	while(Check_Stability(x,y,Check_flag) == 2)
+	{
+		HAL_Delay(30);
+	}
 //			Realize_Stop();
 //			基于TX2坐标进行闭环
-			Move_Tx_Pid_Ctrl(tx_target, ty_target);
+	Move_Tx_Pid_Ctrl(tx_target, ty_target);
 //			抓取第一个物料
 //			物料盘先转动到目标位置
-			FT_Servo_Put(0,Grab_count);
+	FT_Servo_Put(0,Grab_count);
 
-			Move_Arm(1, 50, 300);
+	Move_Arm(1, 50, 300);
 //			上升
-			Drop_Location_jiang(200, 120, 1000);
+	Drop_Location_jiang(200, 120, 1000);
 //			catch_Frist(860, 2375);
 //			爪子舵机转动到放置物料到车上的角度
-			FT_Servo_Put(1,Grab_count);
+	FT_Servo_Put(1,Grab_count);
 //			TODO:调试，失能五号舵机
-			Drop_Location_jiang(200, 120, 6000);
+	Drop_Location_jiang(200, 120, 6000);
 //			Emm_V5_En_Control(5,false,false);
 //			while(1)
 //			{
 //				;
 //			}
 //			松开爪子
-			Move_Arm(1, 300, 300);
+	Move_Arm(1, 300, 300);
 //			上升
-			Drop_Location_jiang(200, 120, 1000);
+	Drop_Location_jiang(200, 120, 1000);
 //			向右转，与车身正交
-			if(Grab_count < 3)
-				FT_Servo_Orth();
-			else
-				FT_Servo_Zero(1);
-			Grab_count += 1;
+	if(Grab_count < 3)
+	{
+		FT_Servo_Orth();
+		Drop_Location_jiang(200, 120, 8600);
+	}
+	else
+		FT_Servo_Zero(1);
+	Grab_count += 1;
 	}
 	Grab_count = 0;
 }

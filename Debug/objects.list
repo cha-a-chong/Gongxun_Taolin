@@ -46,3 +46,4 @@
 "./Hardware/Screen/Screen.o"
 "./Hardware/Stability/Stability.o"
 "./Hardware/TX/Tx.o"
+"./Hardware/Time/Time.o"

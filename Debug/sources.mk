@@ -36,4 +36,5 @@ Hardware/SCSLib \
 Hardware/Screen \
 Hardware/Stability \
 Hardware/TX \
+Hardware/Time \
 
