@@ -330,32 +330,31 @@ int main(void)
 						;
 					}
 //					X参�??150 Y参�??1430
-					Move_Action_Nopid_Left_Ctrl(150, 1455);  //ACTION调整
+//					Move_Action_Nopid_Left_Ctrl(150, 1455);  //ACTION调整
 //					�?查TX2是否传�?�物料�??
 					while (Point_Flag != 1)
 					{
 						;  //如果Point_Flag值不�?1,则在此处等待
 					}
 //					TODO:应该在物料抓取函数中实现基于TX2的物料点位闭�?
-					Frist_Grab_Wuliao();
+//					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
 
 				case 2:  //离开原料区，进入加工�?
 
 					Move_TO_jianzhi1(4500, 4335);
-					while (1)
-					{
-						;
-					}
-//					Drop_Location_jiang(50, 50, 11000);
+					Roll_Status();
 					HAL_Delay(50);
-					Move_Action_Nopid_Forward_Ctrl(160, 1070);
+//					Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					flag = 3;
 					break;
 				case 3:    //暂存�??
-
 					Move_TO_zancunqu(22000, 4335);
+					while(1)
+					{
+						;
+					}
 					put_wuliao_to_circular_frist();
 					put_wuliao_to_Car_frist();
 					HAL_Delay(yanshi);

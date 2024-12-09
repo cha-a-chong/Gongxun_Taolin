@@ -351,7 +351,8 @@ void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 {
 	Move_Line(RunSpeed, RunAcc, Lineclk);
-	HAL_Delay(yanshi);
+	HAL_Delay(3000);
+//	旋转
 	Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	HAL_Delay(yanshi);
 }

@@ -2,7 +2,8 @@
 ../Hardware/Stability/Stability.c:21:8:calculate_variance	40	static
 ../Hardware/Stability/Stability.c:31:9:Check_Stability	48	static
 ../Hardware/Stability/Stability.c:71:9:Check_Status	8	static
-../Hardware/Stability/Stability.c:88:9:FT_Servo_Zero	16	static
-../Hardware/Stability/Stability.c:98:9:FT_Servo_Orth	8	static
-../Hardware/Stability/Stability.c:105:9:FT_Servo_Put	16	static
-../Hardware/Stability/Stability.c:127:9:FT_Servo_Wait_Zero	16	static
+../Hardware/Stability/Stability.c:87:9:Roll_Status	8	static
+../Hardware/Stability/Stability.c:105:9:FT_Servo_Zero	16	static
+../Hardware/Stability/Stability.c:115:9:FT_Servo_Orth	8	static
+../Hardware/Stability/Stability.c:122:9:FT_Servo_Put	16	static
+../Hardware/Stability/Stability.c:144:9:FT_Servo_Wait_Zero	16	static
