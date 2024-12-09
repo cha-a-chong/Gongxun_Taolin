@@ -23,6 +23,8 @@ uint8_t FT_Servo_Zero(uint8_t Number);
 uint8_t FT_Servo_Orth(void);
 // 发车前检查状态
 uint8_t Check_Status(void);
+// 物料抓完，回滚状态
+uint8_t Roll_Status(void);
 // 飞特舵机等待回零到位
 uint8_t FT_Servo_Wait_Zero(uint8_t ID);
 

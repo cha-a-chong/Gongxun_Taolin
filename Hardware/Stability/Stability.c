@@ -84,6 +84,23 @@ uint8_t Check_Status(void)
 	return 1;
 }
 
+uint8_t Roll_Status(void)
+{
+//  首先控制步进电机,回到零点
+	Drop_Location_jiang(200, 120, 0);
+	Move_Arm(1, 50, 300);
+//  6号舵机900
+	Move_Arm(6, 900, 300);
+//  旋转物料结构的支撑舵机
+	FT_Servo_Zero(0);
+//  旋转爪子结构的支撑舵机
+	FT_Servo_Zero(1);
+//  步进电机下降,将位置调整为最最低点
+	Drop_Location_jiang(200, 120, 7000);
+//	Choke_Flag = false;
+	return 1;
+}
+
 // 将目标舵机回零
 uint8_t FT_Servo_Zero(uint8_t Number)
 {
