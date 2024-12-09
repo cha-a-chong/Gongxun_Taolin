@@ -6,9 +6,30 @@
  */
 
 #include "Run.h"
+#include "Bool.h"
+#include "main.h"
+
 
 #define RunSpeed 100
 #define RunAcc 120
+
+/* ------ Work Log -------- */
+/*
+TODO: 实现步进电机底盘运动的非阻塞函数
+
+
+
+
+*/
+
+// 阻塞操作标志位 false表示 非阻塞，true表示阻塞
+bool Choke_Flag = false;
+// 函数申请阻塞操作标志位 false表示 非阻塞，true表示阻塞
+bool Apply_Chock = false;
+// 接收回调进行检测
+bool Call_Flag = false;
+
+
 
 int time5_jiancha = 0;
 
@@ -55,23 +76,44 @@ void Move_Line(u16 speed, u8 acc, u32 length)  //初始设定130.5个脉冲是�
 	HAL_Delay(30);
 }
 
-void Move_Left(u16 speed, u8 acc, u32 length) {
-	int time;
-	time = length / speed * 20;  //毫秒
+bool Move_Left(u16 speed, u8 acc, u32 length) {
+	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
+	if(Choke_Flag == true)
+		return  false;
+	// 无阻塞操作，申请阻塞
+	Apply_Chock = true;
+	// 底盘步进电机移动
 	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
-
-	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
-
-	Emm_mode = 1;
-	time5_jiancha = (time + 800) / 10;
-	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
-		;
-//	RxFlag = 0;
-	HAL_Delay(30);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	// 使能阻塞定时器中断
+	HAL_TIM_Base_Start_IT(&htim12);
+	Call_Flag = true;
+	return true;
 }
+
+// void Move_Left(u16 speed, u8 acc, u32 length) {
+// 	int time;
+// 	time = length / speed * 20;  //毫秒
+// 	// Emm_V5_Pos_Control是非阻塞函数
+// 	// Move_Left是阻塞函数
+// 	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+// 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+
+// 	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
+
+// 	Emm_mode = 1;
+// 	time5_jiancha = (time + 800) / 10;
+// 	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
+// 		;
+// //	RxFlag = 0;
+// 	HAL_Delay(30);
+// }
 
 void Move_Back(u16 speed, u8 acc, u32 length) {
 	int time;

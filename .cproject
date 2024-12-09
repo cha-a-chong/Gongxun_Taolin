@@ -80,9 +80,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Hardware"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Hardware"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -161,9 +161,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry excluding="Stability|Screen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Hardware"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="Stability|Screen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Hardware"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

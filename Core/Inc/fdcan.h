@@ -32,6 +32,7 @@ extern "C" {
 #include "usart.h"
 #include "gpio.h"
 #include <string.h>
+#include <stdbool.h>
 extern uint8_t Emm_mode;
 extern uint8_t RxFlag;
 /* USER CODE END Includes */
