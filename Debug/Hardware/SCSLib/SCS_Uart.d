@@ -32,7 +32,8 @@ Hardware/SCSLib/SCS_Uart.o: ../Hardware/SCSLib/SCS_Uart.c \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Hardware/SCSLib/SCS_Uart.h ../Core/Inc/usart.h ../Core/Inc/main.h
+ ../Hardware/SCSLib/SCS_Uart.h ../Core/Inc/usart.h ../Core/Inc/main.h \
+ ../Core/Inc/Bool.h
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:
@@ -69,3 +70,4 @@ Hardware/SCSLib/SCS_Uart.o: ../Hardware/SCSLib/SCS_Uart.c \
 ../Hardware/SCSLib/SCS_Uart.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
+../Core/Inc/Bool.h:

@@ -33,7 +33,7 @@ Hardware/Emm_V5/Emm_V5.o: ../Hardware/Emm_V5/Emm_V5.c \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h
+ ../Core/Inc/Bool.h ../Core/Inc/usart.h ../Core/Inc/gpio.h
 ../Hardware/Emm_V5/Emm_V5.h:
 ../Core/Inc/fdcan.h:
 ../Core/Inc/main.h:
@@ -70,5 +70,6 @@ Hardware/Emm_V5/Emm_V5.o: ../Hardware/Emm_V5/Emm_V5.c \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
+../Core/Inc/Bool.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:

@@ -28,7 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
-
+#include <Bool.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -48,13 +48,17 @@ extern "C" {
 /* USER CODE BEGIN EM */
 extern uint8_t System_Flag;
 extern uint8_t Joy_Flag;
+
+extern bool Base_Data;
+extern bool Apply_Chock;
+extern bool Choke_Flag;
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-// 串口�???大接收数�???
+// 串口�???大接收数�???
 #define RXBUFFERSIZE  256
 
 /* USER CODE END EFP */
