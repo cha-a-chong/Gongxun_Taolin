@@ -105,8 +105,8 @@ int QR_data[6] = { 0,0,0,0,0,0 };
 // PID设定目标值
 float x_goal, y_goal, a_goal;
 // TODO：需要根据调试过程修改目标值
-float tx_target = 370.5;
-float ty_target = 230.5;
+float tx_target = 339;
+float ty_target = 227;
 uint16_t flag = 0;
 uint16_t TX_flag = 0;
 int colour;
@@ -116,7 +116,10 @@ int QR_Flag = 0;
 
 // 正式比赛前车身姿态调整标志位
 extern uint8_t Ready_Flag;
-
+// 抓取过程标志位
+char Match_Flag = 0;
+// 抓取计算稳定性标志位，0为识别有故障,1为正常计算
+char Check_flag = 0;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -295,7 +298,7 @@ int main(void) {
 				switch (flag) {
 				case 0:  //发车，进入扫码区
 //					X轴建议移动到150左右
-					Move_TO_Saomaqu(2200, 7500);
+					Move_TO_Saomaqu(2400, 8250);
 					Start();    //5400处
 					flag = 1;
 //					break;
@@ -303,24 +306,20 @@ int main(void) {
 				case 1:  //离开扫码区，进入原料区
 //					物料理想点位 375
 					Move_TO_yuanliaoqu(10500);
+
 //					X参考150 Y参考1430
-					Move_Action_Nopid_Left_Ctrl(150, 1420);  //ACTION调整
+					Move_Action_Nopid_Left_Ctrl(150, 1455);  //ACTION调整
 //					检查TX2是否传递物料值
 					while(Point_Flag != 1)
 					{
 						;  //如果Point_Flag值不为1,则在此处等待
 					}
-					while(1)
-					{
-						;
-					}
-//					TODO:调整tx_target与ty_target
-					Move_Tx_Pid_Ctrl(tx_target, ty_target); //TX调整
+//					TODO:应该在物料抓取函数中实现基于TX2的物料点位闭环
 					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
 
-				case 2:
+				case 2:  //离开原料区，进入加工区
 
 					Move_TO_jianzhi1(4500, 4335);
 					Drop_Location_jiang(50, 50, 11000);

@@ -267,10 +267,10 @@ extern void Start(void);
 void Move_TO_Saomaqu(float Leftclk, float Lineclk) {
 	Move_Left(RunSpeed, RunAcc, Leftclk);                                                                                         //爪子目前在最低处
 	HAL_Delay(20);
-	HAL_Delay(yanshi);
+//	HAL_Delay(yanshi);
 
 	Move_Line(RunSpeed, RunAcc, Lineclk); ////130.5
-	HAL_Delay(yanshi);
+//	HAL_Delay(yanshi);
 }
 void Move_TO_yuanliaoqu(float Lineclk) //物料区
 {
