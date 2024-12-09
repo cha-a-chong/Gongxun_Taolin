@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "arm.h": "c",
+        "scs_uart.h": "c",
+        "scservo.h": "c",
+        "sms_sts.h": "c",
+        "scs.h": "c"
+    }
+}

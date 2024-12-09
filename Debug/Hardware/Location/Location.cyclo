@@ -1,0 +1,8 @@
+../Hardware/Location/Location.c:24:7:limit	3
+../Hardware/Location/Location.c:29:7:my_abs	2
+../Hardware/Location/Location.c:38:6:PID_Init	1
+../Hardware/Location/Location.c:130:7:X_Ctrl	1
+../Hardware/Location/Location.c:151:7:Y_Ctrl	1
+../Hardware/Location/Location.c:172:7:A_Ctrl	1
+../Hardware/Location/Location.c:192:7:Tx_X_Ctrl	1
+../Hardware/Location/Location.c:213:7:Tx_Y_Ctrl	1

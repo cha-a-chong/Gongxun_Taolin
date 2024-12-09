@@ -1,0 +1,2 @@
+../Hardware/SCSLib/SCS_Uart.c:12:6:Uart_Send	1
+../Hardware/SCSLib/SCS_Uart.c:17:9:Uart_Read	2

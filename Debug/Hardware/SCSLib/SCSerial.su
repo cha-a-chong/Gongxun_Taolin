@@ -1,0 +1,6 @@
+../Hardware/SCSLib/SCSerial.c:16:5:readSCS	16	static
+../Hardware/SCSLib/SCSerial.c:22:5:writeSCS	16	static
+../Hardware/SCSLib/SCSerial.c:36:5:writeByteSCS	16	static
+../Hardware/SCSLib/SCSerial.c:47:6:nopDelay	16	static
+../Hardware/SCSLib/SCSerial.c:55:6:rFlushSCS	8	static
+../Hardware/SCSLib/SCSerial.c:61:6:wFlushSCS	8	static

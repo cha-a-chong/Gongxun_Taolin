@@ -1,0 +1,6 @@
+../Hardware/SCSLib/SCSerial.c:16:5:readSCS	1
+../Hardware/SCSLib/SCSerial.c:22:5:writeSCS	3
+../Hardware/SCSLib/SCSerial.c:36:5:writeByteSCS	2
+../Hardware/SCSLib/SCSerial.c:47:6:nopDelay	2
+../Hardware/SCSLib/SCSerial.c:55:6:rFlushSCS	1
+../Hardware/SCSLib/SCSerial.c:61:6:wFlushSCS	2

@@ -1,0 +1,15 @@
+../Hardware/Emm_V5/Emm_V5.c:10:6:Emm_V5_Reset_CurPos_To_Zero	16	static
+../Hardware/Emm_V5/Emm_V5.c:26:6:Emm_V5_Reset_Clog_Pro	16	static
+../Hardware/Emm_V5/Emm_V5.c:43:6:Emm_V5_Read_Sys_Params	24	static
+../Hardware/Emm_V5/Emm_V5.c:130:6:Emm_V5_Modify_Ctrl_Mode	16	static
+../Hardware/Emm_V5/Emm_V5.c:152:6:Emm_V5_En_Control	16	static
+../Hardware/Emm_V5/Emm_V5.c:174:6:Emm_V5_Vel_Control	24	static
+../Hardware/Emm_V5/Emm_V5.c:203:6:Emm_V5_Pos_Control	24	static
+../Hardware/Emm_V5/Emm_V5.c:233:6:Emm_V5_Stop_Now	16	static
+../Hardware/Emm_V5/Emm_V5.c:251:6:Emm_V5_Synchronous_motion	8	static
+../Hardware/Emm_V5/Emm_V5.c:270:6:Emm_V5_Origin_Set_O	16	static
+../Hardware/Emm_V5/Emm_V5.c:297:6:Emm_V5_Origin_Modify_Params	24	static
+../Hardware/Emm_V5/Emm_V5.c:334:6:Emm_V5_Origin_Trigger_Return	16	static
+../Hardware/Emm_V5/Emm_V5.c:352:6:Emm_V5_Origin_Interrupt	16	static
+../Hardware/Emm_V5/Emm_V5.c:364:6:Emm_V5_Read_Encoder	16	static
+../Hardware/Emm_V5/Emm_V5.c:378:6:Emm_V5_Get_Origin_Status	16	static
