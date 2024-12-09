@@ -311,16 +311,24 @@ int main(void)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}    
-					Move_Line(RunSpeed, RunAcc, 8250);
 					Start();    //5400�?
-					
 					flag = 1;
+					temp=false;
 					break;
 //					Drop_Location_jiang(200, 120, 4000);
 				case 1:  //离开扫码区，进入原料�?
 //					物料理想点位 375
-					Move_TO_yuanliaoqu(10500);
-
+					temp = Move_Line(RunSpeed, RunAcc, 10500);
+					while(temp != true)
+					{
+						temp = Move_Line(RunSpeed, RunAcc, 10500);
+					}
+//					Move_TO_yuanliaoqu(10500);
+//					Choke_Flag = false确定Move_Line已经执行完毕，可以开始进入PID整定阶段
+					while(Choke_Flag == true)
+					{
+						;
+					}
 //					X参�??150 Y参�??1430
 					Move_Action_Nopid_Left_Ctrl(150, 1455);  //ACTION调整
 //					�?查TX2是否传�?�物料�??
@@ -687,9 +695,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //	}
 }
 extern uint16_t time_tx;
-extern bool Base_Data;
-extern bool Apply_Chock;
-extern bool Choke_Flag;
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim2)
@@ -725,6 +731,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				Choke_Flag = false;
 				Apply_Chock = false;
 				HAL_TIM_Base_Stop_IT(&htim12);
+				Base_Data = false;
 			}
 			else
 			{

@@ -18,8 +18,14 @@
 #define yanshi 50
 
 extern int time5_jiancha;
+
+
+
+#define RunSpeed 100
+#define RunAcc 120
+
+
 //位置模式
-// void Move_Line(u16 speed, u8 acc, u32 length);
 bool Move_Line(u16 speed, u8 acc, u32 length);
 bool Move_Left(u16 speed, u8 acc, u32 length);
 //void Move_Left(u16 speed, u8 acc, u32 length);

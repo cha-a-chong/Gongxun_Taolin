@@ -1,5 +1,6 @@
 #include "arm.h"
 #include "Stability/Stability.h"
+#include "Run/Run.h"
 extern int frist_wuliao, second_wuliao, three_wuliao, wuliao_falg;
 extern int colour;
 int Grab_count;
@@ -109,6 +110,12 @@ void catch_Second(uint16_t Pos1, uint16_t Pos2) //从地上抓取到车上
 extern int QR_Flag;
 void Start(void) //下降14000
 {
+//	HAL_Delay(2000);
+	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
+	while(temp != true)
+	{
+		temp = Move_Line(RunSpeed, RunAcc, 8250);
+	}
 //	先将爪子升起来，避免打到TX2或者物料盘
 	Drop_Location_jiang(200, 120, 4000);
 //	将舵机向外转动
@@ -117,8 +124,9 @@ void Start(void) //下降14000
 	Drop_Location_jiang(200, 120, 12000);
 	Move_Arm(1, 500, 300); //爪子张开
 	Move_Arm(6, 500, 300);
-	while (!QR_Flag)
-		;  //等待扫码完成
+//	Move_Line(RunSpeed, RunAcc, 8250);
+//	while (!QR_Flag)
+//		;  //等待扫码完成
 //	扫码完成后将爪子提起俩
 	Drop_Location_jiang(200, 120, 8600);
 	Move_Arm(6, 900, 300);
