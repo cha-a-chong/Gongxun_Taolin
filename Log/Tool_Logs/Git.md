@@ -1,5 +1,4 @@
 ## Git
 填充Git相关信息，实现推送到上游，同步。
-
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
+我已经在NAS端登录了仓库的github账号，可以直接git push
+注意,NAS端只进行同步和推送,并不执行分支合并
