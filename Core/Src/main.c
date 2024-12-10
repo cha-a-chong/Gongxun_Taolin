@@ -68,21 +68,9 @@
 /* USER CODE BEGIN PM */
 
 /*  ---- BUG Log ----
-    ----  标记符号规范
-// TODO: 用来标记待办的地方。常常在有些地方，我们的功能并没有实现，使用ToDo标记我们可以快速定位需要实现的部分。
-// HACK: 用来标记可能需要更改的地方。在写代码的时候，有的地方我们并不确定他是正确的，可能未来有所更改，这时候可以使用HACK标记。
-// NOTE: 添加一些说明文字。
-// INFO: 用来表达一些信息。
-// TAG: 用来创建一些标记。
-// XXX: 用来标记一些草率实现的地方。在写代码的时候，有些地方需要频繁修改，这时候使用XXX标记。
-// BUG: 用来标记BUG~
-// FIXME: 用来标记一些需要修复的位置，可以快速定位。
 
  ------- History -------
-
-- 2024/12/11 : 修改main.c中乱乱码的注释字符串
-
-
+2024/12/11 : Taolin: 增加Log文件夹以及二级文件夹Code_Logs(存放代码修改日志)和Tool_Logs(一些相关工具的说明)
 
  BUG:
  * A. 在抓取物料阶段，如果没有TX2物料坐标，则PID会有问题
@@ -114,7 +102,6 @@
  FIXME:
  修改了爪子支撑结构中的飞特舵机零位，后面与飞特舵机有关的点位都需要调�?
  解决进度：调整到了第一次抓取过程
- Hello World  泥嚎
  * ---- Bug Log End ------
  */
 
@@ -125,8 +112,7 @@ uint8_t Joy_data = 0;
 uint8_t HwtData;
 // TX2 接收数据变量
 uint8_t aRxBuffer = 0;
-char RxBuffer[RXBUFFERSIZE] =
-{ 0 };
+char RxBuffer[RXBUFFERSIZE] ={ 0 };
 uint8_t Uart10_Rx_Cnt = 0;
 float x = .0;
 float y = .0;
