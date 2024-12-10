@@ -67,24 +67,54 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-/*  ---- BUG Log Start ----
+/*  ---- BUG Log ----
+    ----  标记符号规范
+// TODO: 用来标记待办的地方。常常在有些地方，我们的功能并没有实现，使用ToDo标记我们可以快速定位需要实现的部分。
+// HACK: 用来标记可能需要更改的地方。在写代码的时候，有的地方我们并不确定他是正确的，可能未来有所更改，这时候可以使用HACK标记。
+// NOTE: 添加一些说明文字。
+// INFO: 用来表达一些信息。
+// TAG: 用来创建一些标记。
+// XXX: 用来标记一些草率实现的地方。在写代码的时候，有些地方需要频繁修改，这时候使用XXX标记。
+// BUG: 用来标记BUG~
+// FIXME: 用来标记一些需要修复的位置，可以快速定位。
+
+ ------- History -------
+
+- 2024/12/11 : 修改main.c中乱乱码的注释字符串
+
+
+
  BUG:
- * A.在抓取物料阶段，如果没有TX2物料坐标，则PID会有问题
- * 	 解决方案：使用标志位，如果没有TX2坐标返回标志，则不进入PID调整阶段，�?�是进入等待
- * 	 目前状�?�：有点小Bug,上面的情况只是会偶尔出现
- * B.屏幕上没有显示TX2回传物料坐标点，不利于调�?
- * 	 解决进度: 已解�?
- * C.屏幕显示物料颜色
- * 	 解决方案：是修改串口屏工程，显示�?整块矩形色块
- * 	 解决进度：可以显示当前识别物料及色环的颜�?
- * D.物料旋转过程中，没有判定物料是否会停下，而是在检测到后直接进行抓�?
- * 	 解决方案：修�?32端代码，取十次数据差值，在差值趋�?1%精度时视为稳�?
- * 	 解决进度：写了，好像没有�?么用，进�?1%
- * E.在TX2识别过程中不会主动滤色环或�?�物料，而是�?测到�?么就发�?�什么，�?要�?�过32端主动过滤，防止影响控制
- * 	 解决进度：新建文件夹
+ * A. 在抓取物料阶段，如果没有TX2物料坐标，则PID会有问题
+ * 	  解决方案：使用标志位，如果没有TX2坐标返回标志，则不进入PID调整阶段，应当进入等待
+ * 	  目前状况：有点小Bug,上面的情况只是会偶尔出现
+ *
+ * B. 屏幕上没有显示TX2回传物料坐标点，不利于调试
+ * 	  解决进度: 已解决
+ *
+ * C. 屏幕显示物料颜色
+ * 	  解决方案：修改串口屏工程，
+ * 	  解决进度：可以显示当前识别物料及色环的颜色代码(1:red 2:green 3:blue 5:?)
+ *
+ * D. 物料旋转过程中，没有判定物料是否会停下，而是在检测到后直接进行抓取
+ * 	  解决方案：修改32端代码，取十次数据差值，在差值趋于1%精度时视为进入稳态
+ * 	  解决进度：写了，好像没有什么用，进度1%
+ *
+ * E. 在TX2识别过程中不会主动滤色环或�?�物料，而是�?测到�?么就发�?�什么，�?要�?�过32端主动过滤，防止影响控制
+ * 	  解决进度：新建文件夹
+ *
+ * F. 步进电机失步，未走完则到位返回？应该是执行到了下一步 --桃林饮酒
+ * 	  目前状况: 根据debug过程中的调试,在第一次向左移动后,出现步进电机卡住，但是步进电机阻塞操作标志位为true,也就是说没有返回到位标志位。
+ * 	  解决方案: Emm_V5中增加查询电机状态的函数()
+ * G. 第一步向左走然后停止的频率较高，目前猜测是未收到到位返回命令
+ *
+ * H. 原料区识别抓取存在问题
+ *
+ * I. 刚开启启动调整车身  舵机不动
  FIXME:
  修改了爪子支撑结构中的飞特舵机零位，后面与飞特舵机有关的点位都需要调�?
- 解决进度：调整到了第�?次抓�?
+ 解决进度：调整到了第一次抓取过程
+ Hello World  泥嚎
  * ---- Bug Log End ------
  */
 
@@ -103,9 +133,9 @@ float y = .0;
 char Point_Flag = 0;
 int QR_data[6] =
 { 0, 0, 0, 0, 0, 0 };
-// PID设定目标�?
+// PID�趨Ŀ��??
 float x_goal, y_goal, a_goal;
-// TODO：需要根据调试过程修改目标�??
+// TODO����Ҫ���ݵ��Թ����޸�Ŀ��???
 float tx_target = 339;
 float ty_target = 227;
 uint16_t flag = 0;
@@ -115,11 +145,11 @@ int wuliao_falg;
 
 int QR_Flag = 0;
 
-// 正式比赛前车身姿态调整标志位
+// ��ʽ����ǰ������̬������־λ
 extern uint8_t Ready_Flag;
-// 抓取过程标志�?
+// ץȡ���̱�־??
 char Match_Flag = 0;
-// 抓取计算稳定性标志位�?0为识别有故障,1为正常计�?
+// ץȡ�����ȶ��Ա�־λ??0Ϊʶ���й���,1Ϊ������??
 char Check_flag = 0;
 /* USER CODE END PM */
 
@@ -168,7 +198,7 @@ int main(void)
 	SystemClock_Config();
 
 	/* USER CODE BEGIN SysInit */
-	//  USART10 用于Action串口转发,暂时使用无线串口将数据转发到主机
+	//  USART10 ����Action����ת��,��ʱʹ�����ߴ��ڽ�����ת��������
 	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
@@ -189,23 +219,23 @@ int main(void)
 	MX_TIM12_Init();
 	/* USER CODE BEGIN 2 */
 
-//	清除定时器初始化过程中的更新中断标志�?
+//	�����ʱ����ʼ�������еĸ����жϱ�־??
 	__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE);
-//	使能定时器中�?
+//	ʹ�ܶ�ʱ����??
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim5);
 	HAL_TIM_Base_Start_IT(&htim3);
-//	使能串口接收中断
+//	ʹ�ܴ��ڽ����ж�
 	HAL_UART_Receive_IT(&huart4, &Screen_data, 1);
-//	HWT101预留中断接口
+//	HWT101Ԥ���жϽӿ�
 	HAL_UART_Receive_IT(&huart2, &HwtData, 1);
-//	TX2通信接收中断
+//	TX2ͨ�Ž����ж�
 	HAL_UART_Receive_IT(&huart10, (uint8_t*) &aRxBuffer, 1);
 	HAL_UART_Receive_IT(&huart9, &data, 1);
 //	HAL_UART_Receive_IT(&huart10, &Joy_data, 1);
 
 	PID_Init();
-//  延时2s用于等待步进电机上电
+//  ��ʱ2s���ڵȴ���������ϵ�
 //	HAL_Delay(2000);
 
 	/* USER CODE END 2 */
@@ -217,71 +247,72 @@ int main(void)
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-// 		按下准备发车后进入该段函数
+// 		����׼�����������öκ���
 		if (Ready_Flag == 1)
 		{
 			Ready_Flag = 0;
-//			整定车身
+//			��������
 			Check_Status();
 		}
-// 		按下发车后进入该段函数
+// 		���·��������öκ���
 		if (System_Flag == 1)
 		{
 			System_Flag = 0;
-//			向TX2发送字符串"e1f"
-			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,0x1000);
-			/***********************进入运行逻辑状态机*************************/
+//			��TX2�����ַ���"e1f"
+			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,
+					0x1000);
+			/***********************���������߼�״̬��*************************/
 			while (1)
 			{
 				switch (flag)
 				{
-				case 0:  //发车，进入扫码区
-//					X轴建议移动到150左右
-					// Move_TO_Saomaqu(2400, 8250);
+				case 0:  //����������ɨ����
+//					X�Ὠ���ƶ���150����
+				// Move_TO_Saomaqu(2400, 8250);
 					bool temp = Move_Left(RunSpeed, RunAcc, 2400);
-					while(temp != true)
+					while (temp != true)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
-					}    
+					}
 					Start();
 					flag = 1;
 					break;
 //					Drop_Location_jiang(200, 120, 4000);
-				case 1:  //离开扫码区，进入原料�?
-//					物料理想点位 375
+				case 1:  //�뿪ɨ����������ԭ��??
+//					���������λ 375
 					temp = Move_Line(RunSpeed, RunAcc, 10500);
-					while(temp != true)
+					while (temp != true)
 					{
-// 						如果该段被阻塞，则一直重发
+// 						����öα���������һֱ�ط�
 						temp = Move_Line(RunSpeed, RunAcc, 10500);
 					}
-//					Choke_Flag = false确定Move_Line已经执行完毕，可以开始进入PID整定阶段
-					while(Choke_Flag == true)
+//					Choke_Flag = falseȷ��Move_Line�Ѿ�ִ����ϣ����Կ�ʼ����PID�����׶�
+					while (Choke_Flag == true)
 					{
 						;
 					}
-//					Action点位调整 X参数150 Y参数1455
+//					Action��λ���� X����150 Y����1455
 //					Move_Action_Nopid_Left_Ctrl(150, 1455);
-//					检查TX2是否传递物料点位信息
+//					���TX2�Ƿ񴫵����ϵ�λ��Ϣ
 					while (Point_Flag != 1)
 					{
-						;  //如果Point_Flag值不为1,即没有识别到物料，则进入等待状态
+						;  //���Point_Flagֵ��Ϊ1,��û��ʶ�����ϣ������ȴ�״̬
 					}
-//					TODO:应该在物料抓取函数中实现基于TX2的物料点位闭环
+//					TODO:Ӧ��������ץȡ������ʵ�ֻ���TX2�����ϵ�λ�ջ�
 //					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
 
-				case 2:  //离开原料区，进入十字前方，进行姿态校准
+				case 2:  //�뿪ԭ����������ʮ��ǰ����������̬У׼
 					Move_TO_jianzhi1(4500, 4335);
 					Roll_Status();
 					HAL_Delay(50);
 //					Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					flag = 3;
 					break;
-				case 3:    //暂存�??
+				case 3:    //�ݴ�???
 					Move_TO_zancunqu(22000, 4335);
-					while(1)
+					while (1)
 					{
 						;
 					}
@@ -291,11 +322,11 @@ int main(void)
 					flag = 4;
 					break;
 				case 4:
-					Move_TO_jianzhi2(9000, 4335);     //ACTION调整
+					Move_TO_jianzhi2(9000, 4335);     //ACTION����
 					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
 					flag = 5;
 					break;
-				case 5:       //粗加工区
+				case 5:       //�ּӹ���
 					Move_TO_cujiagongqu(10000);
 					put_wuliao_to_circular_second();
 					flag = 6;
@@ -306,9 +337,9 @@ int main(void)
 					Drop_Location_jiang(50, 50, 11000);
 					flag = 7;
 					break;
-				case 7:      //原料�??
+				case 7:      //ԭ��???
 					Move_TO_fanyuanliaoqu(4000);
-					Move_Action_Nopid_Left_Ctrl(160, 1400);      //ACTION调整
+					Move_Action_Nopid_Left_Ctrl(160, 1400);      //ACTION����
 					Second_Run_Frist_Grab_Wuliao();
 					flag = 8;
 					break;
@@ -318,7 +349,7 @@ int main(void)
 					Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					flag = 9;
 					break;
-				case 9:    //暂存�??
+				case 9:    //�ݴ�???
 					Move_TO_zancunqu(22000, 4335);
 					Second_Run_put_wuliao_to_circular_frist();
 
@@ -327,11 +358,11 @@ int main(void)
 					flag = 10;
 					break;
 				case 10:
-					Move_TO_jianzhi2(9000, 4335);     //ACTION调整
+					Move_TO_jianzhi2(9000, 4335);     //ACTION����
 					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
 					flag = 11;
 					break;
-				case 11:       //粗加工区
+				case 11:       //�ּӹ���
 					Move_TO_cujiagongqu(10000);
 
 					flag = 12;
@@ -341,7 +372,7 @@ int main(void)
 					Move_Action_Nopid_Left_Ctrl(170, 1860);
 					flag = 13;
 					break;
-				case 13:      //原料�??
+				case 13:      //ԭ��???
 					Move_TO_fanyuanliaoqu(22000);
 					flag = 14;
 					break;
@@ -353,21 +384,21 @@ int main(void)
 			if (Ready_Flag == 1)
 			{
 				Ready_Flag = 0;
-				//			整定车身
+				//			��������
 				Check_Status();
 			}
-			/*********************************纯跑�??*******************************************/
+			/*********************************����???*******************************************/
 //
 //			while (1) {
 //
 //				switch (flag) {
-//				case 0:  //扫码�??
+//				case 0:  //ɨ��???
 //					Move_TO_Saomaqu(2100, 7500);
 //					flag = 1;
 //					break;
-//				case 1:  //原料�??
+//				case 1:  //ԭ��???
 //					Move_TO_yuanliaoqu(10500);
-//					Move_Action_Nopid_Left_Ctrl(160, 1400);  //ACTION调整
+//					Move_Action_Nopid_Left_Ctrl(160, 1400);  //ACTION����
 //					flag = 2;
 //					break;
 //
@@ -388,7 +419,7 @@ int main(void)
 //					flag = 4;
 //					break;
 //				case 4:
-//					Move_TO_jianzhi2(9000, 4335);     //ACTION调整
+//					Move_TO_jianzhi2(9000, 4335);     //ACTION����
 //					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
 //					flag = 5;
 //					break;
@@ -409,9 +440,9 @@ int main(void)
 //					flag = 7;
 //					break;
 //				case 7:
-//					//原料�??
+//					//ԭ��???
 //					Move_TO_fanyuanliaoqu(5000);
-//					Move_Action_Nopid_Left_Ctrl(160, 1400);      //ACTION调整
+//					Move_Action_Nopid_Left_Ctrl(160, 1400);      //ACTION����
 //					flag = 8;
 //					break;
 //				default:
@@ -420,7 +451,7 @@ int main(void)
 //				}
 //			}
 /////////////////////////////////////////////////////////////////////////////////
-			/**************************抓取参数*********************************************/
+			/**************************ץȡ����*********************************************/
 //					catch(860, 2375);
 //					catch(1910, 2370);
 //					catch(2960, 2370);
@@ -512,16 +543,16 @@ PUTCHAR_PROTOTYPE
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if (huart->Instance == UART9)                          // 判断中断�?
+	if (huart->Instance == UART9)                          // �ж��ж�??
 	{
-		Data_Analyse(data);                                // 处理Action数据
-		HAL_UART_Receive_IT(&huart9, &data, 1);            // 继续中断回调
+		Data_Analyse(data);                                // ����Action����
+		HAL_UART_Receive_IT(&huart9, &data, 1);            // �����жϻص�
 
 	}
-	else if (huart->Instance == UART4)                   // 判断中断�?
+	else if (huart->Instance == UART4)                   // �ж��ж�??
 	{
-		Check_Flag(Screen_data);                       	   // 处理串口屏数�?
-		HAL_UART_Receive_IT(&huart4, &Screen_data, 1);     // 继续中断回调
+		Check_Flag(Screen_data);                       	   // ����������??
+		HAL_UART_Receive_IT(&huart4, &Screen_data, 1);     // �����жϻص�
 	}
 
 	else if (huart->Instance == USART10)
@@ -538,7 +569,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 
 		if (aRxBuffer == 'd')
-		{ // 如果包尾�?'d'，说明是物料和圆环点位数�?
+		{ // �����β??'d'��˵�������Ϻ�Բ����λ��??
 			char *start = strchr(RxBuffer, 'a');
 			char *end = strchr(RxBuffer, 'd');
 
@@ -547,18 +578,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				*end = '\0';
 				if (sscanf(start + 1, "%f,%f,%d", &x, &y, &colour) == 3)
 				{
-					// 数据解析成功
+					// ���ݽ����ɹ�
 					Point_Flag = 1;
 				}
 
-				// 清空缓冲�?
+				// ��ջ���??
 				memset(RxBuffer, 0, sizeof(RxBuffer));
 				Uart10_Rx_Cnt = 0;
 			}
 		}
 
 		if (aRxBuffer == 'b')
-		{ // 如果包尾�?'b'，说明是二维码数�?
+		{ // �����β??'b'��˵���Ƕ�ά����??
 			char *start = strchr(RxBuffer, 'c');
 			char *end = strchr(RxBuffer, 'b');
 
@@ -571,56 +602,56 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						&QR_data[1], &QR_data[2], &QR_data[3], &QR_data[4],
 						&QR_data[5]))
 				{
-					// 数据解析成功
+					// ���ݽ����ɹ�
 //						if(i==5) QR_Flag =  1;
 					QR_Flag = 1;
 				}
 //				}
-				// 清空缓冲�?
+				// ��ջ���??
 				memset(RxBuffer, 0, sizeof(RxBuffer));
 				Uart10_Rx_Cnt = 0;
 			}
 		}
-		// 重新启动接收
+		// ������������
 		HAL_UART_Receive_IT(&huart10, (uint8_t*) &aRxBuffer, 1);
 	}
-//	else if (huart->Instance == USART2)                            // 判断中断
+//	else if (huart->Instance == USART2)                            // �ж��ж�
 //	{
 //
 //		static uint8_t rx_buffer[11];
 //		static uint8_t rx_index = 0;
-//		static uint8_t state = 0; // 0: 寻找包头�??1: 接收数据
+//		static uint8_t state = 0; // 0: Ѱ�Ұ�ͷ???1: ��������
 //
-//		if (state == 0) { // 寻找包头
+//		if (state == 0) { // Ѱ�Ұ�ͷ
 //
 //			if (HwtData == 0x55) {
 //				rx_buffer[0] = HwtData;
 //				rx_index = 1;
 //				state = 1;
 //			}
-//		} else if (state == 1) { // 接收数据
+//		} else if (state == 1) { // ��������
 //			rx_buffer[rx_index++] = HwtData;
-//			if (rx_index == 2 && rx_buffer[1] != 0x53 && rx_buffer[1] != 0x52) { // 如果第二字节不是0x53�??0x52，则继续寻找下一�??0x55
+//			if (rx_index == 2 && rx_buffer[1] != 0x53 && rx_buffer[1] != 0x52) { // ����ڶ��ֽڲ���0x53???0x52�������Ѱ����һ???0x55
 //				if (rx_buffer[1] == 0x55) {
 //					rx_index = 1;
 //				} else {
 //					state = 0;
 //					rx_index = 0;
 //				}
-//			} else if (rx_index == 11) { // 接收到了完整的数据包
+//			} else if (rx_index == 11) { // ���յ������������ݰ�
 //				ParseAndPrintData(rx_buffer, 11);
 //				rx_index = 0;
-//				state = 0; // 重新寻找包头
+//				state = 0; // ����Ѱ�Ұ�ͷ
 //			}
 //		}
 //		HAL_UART_Receive_IT(&huart2, &HwtData, 1);
 //
 //	}
 //
-//	else if (huart->Instance == USART10)                            // 判断中断
+//	else if (huart->Instance == USART10)                            // �ж��ж�
 //	{
-//		Recive_Joydata(Joy_data);                             	// 处理Joy_data数据
-//		HAL_UART_Receive_IT(&huart10, &Joy_data, 1);       // 继续中断回调
+//		Recive_Joydata(Joy_data);                             	// ����Joy_data����
+//		HAL_UART_Receive_IT(&huart10, &Joy_data, 1);       // �����жϻص�
 //	}
 }
 extern uint16_t time_tx;
@@ -650,12 +681,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if (time5_jiancha != 0)
 			time5_jiancha--;
 	}
-//	步进电机阻塞操作回调
+//	����������������ص�
 	else if (htim == &htim12)
 	{
-		if(Apply_Chock == true)
+		if (Apply_Chock == true)
 		{
-			if(Base_Data == true)
+			if (Base_Data == true)
 			{
 				Choke_Flag = false;
 				Apply_Chock = false;
@@ -664,10 +695,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			}
 			else
 			{
-				return ;
+				return;
 			}
 		}
-//		根据查询情况来确定是否要继续阻塞 Choke_Flag
+//		���ݲ�ѯ�����ȷ���Ƿ�Ҫ�������� Choke_Flag
 	}
 }
 /* USER CODE END 4 */
