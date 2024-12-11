@@ -38,7 +38,7 @@
 #include "SCSLib/SCServo.h"
 #include "SCSLib/SCS_Uart.h"
 #include "HWT101CT/HWT101CT.h"
-
+#include "Bool.h"
 #include "Stability/Stability.h"
 
 #ifdef __GNUC__
@@ -67,44 +67,6 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-/*  ---- BUG Log ----
-
- ------- History -------
-2024/12/11 : Taolin: 增加Log文件夹以及二级文件夹Code_Logs(存放代码修改日志)和Tool_Logs(一些相关工具的说明)
-
- BUG:
- * A. 在抓取物料阶段，如果没有TX2物料坐标，则PID会有问题
- * 	  解决方案：使用标志位，如果没有TX2坐标返回标志，则不进入PID调整阶段，应当进入等待
- * 	  目前状况：有点小Bug,上面的情况只是会偶尔出现
- *
- * B. 屏幕上没有显示TX2回传物料坐标点，不利于调试
- * 	  解决进度: 已解决
- *
- * C. 屏幕显示物料颜色
- * 	  解决方案：修改串口屏工程，
- * 	  解决进度：可以显示当前识别物料及色环的颜色代码(1:red 2:green 3:blue 5:?)
- *
- * D. 物料旋转过程中，没有判定物料是否会停下，而是在检测到后直接进行抓取
- * 	  解决方案：修改32端代码，取十次数据差值，在差值趋于1%精度时视为进入稳态
- * 	  解决进度：写了，好像没有什么用，进度1%
- *
- * E. 在TX2识别过程中不会主动滤色环或�?�物料，而是�?测到�?么就发�?�什么，�?要�?�过32端主动过滤，防止影响控制
- * 	  解决进度：新建文件夹
- *
- * F. 步进电机失步，未走完则到位返回？应该是执行到了下一步 --桃林饮酒
- * 	  目前状况: 根据debug过程中的调试,在第一次向左移动后,出现步进电机卡住，但是步进电机阻塞操作标志位为true,也就是说没有返回到位标志位。
- * 	  解决方案: Emm_V5中增加查询电机状态的函数()
- * G. 第一步向左走然后停止的频率较高，目前猜测是未收到到位返回命令
- *
- * H. 原料区识别抓取存在问题
- *
- * I. 刚开启启动调整车身  舵机不动
- FIXME:
- 修改了爪子支撑结构中的飞特舵机零位，后面与飞特舵机有关的点位都需要调�?
- 解决进度：调整到了第一次抓取过程
- * ---- Bug Log End ------
- */
-
 //	串口接受数据变量
 uint8_t data;
 uint8_t Screen_data;
@@ -117,11 +79,10 @@ uint8_t Uart10_Rx_Cnt = 0;
 float x = .0;
 float y = .0;
 char Point_Flag = 0;
-int QR_data[6] =
-{ 0, 0, 0, 0, 0, 0 };
-// PID�趨Ŀ��??
+int QR_data[6] = { 0, 0, 0, 0, 0, 0 };
+// PID调整目标值
 float x_goal, y_goal, a_goal;
-// TODO����Ҫ���ݵ��Թ����޸�Ŀ��???
+// TODO:根据调试过程确定X与Y轴的目标值
 float tx_target = 339;
 float ty_target = 227;
 uint16_t flag = 0;
@@ -131,12 +92,12 @@ int wuliao_falg;
 
 int QR_Flag = 0;
 
-// ��ʽ����ǰ������̬������־λ
+// 正式比赛前车身姿态调整标志位
 extern uint8_t Ready_Flag;
-// ץȡ���̱�־??
-char Match_Flag = 0;
-// ץȡ�����ȶ��Ա�־λ??0Ϊʶ���й���,1Ϊ������??
-char Check_flag = 0;
+// 抓取过程标志位
+bool Match_Flag = false;
+// 抓取过程稳定性标志位,false为有故障,true为可以抓取
+bool Check_flag = false;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -184,7 +145,8 @@ int main(void)
 	SystemClock_Config();
 
 	/* USER CODE BEGIN SysInit */
-	//  USART10 ����Action����ת��,��ʱʹ�����ߴ��ڽ�����ת��������
+	// USART10 用于Action串口转发,暂时使用无线串口将数据转发到主机
+	// TODO:根据通信质量的稳定性决定是否要更换为有线USB转TTL
 	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
@@ -205,23 +167,23 @@ int main(void)
 	MX_TIM12_Init();
 	/* USER CODE BEGIN 2 */
 
-//	�����ʱ����ʼ�������еĸ����жϱ�־??
+//	清除定时器初始化过程中的更新中断标志
 	__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE);
-//	ʹ�ܶ�ʱ����??
+//	使能定时器中断
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim5);
 	HAL_TIM_Base_Start_IT(&htim3);
-//	ʹ�ܴ��ڽ����ж�
+//	使能串口接收中断
 	HAL_UART_Receive_IT(&huart4, &Screen_data, 1);
-//	HWT101Ԥ���жϽӿ�
+//	HWT101预留中断接口
 	HAL_UART_Receive_IT(&huart2, &HwtData, 1);
-//	TX2ͨ�Ž����ж�
+//	TX2通信接收中断
 	HAL_UART_Receive_IT(&huart10, (uint8_t*) &aRxBuffer, 1);
 	HAL_UART_Receive_IT(&huart9, &data, 1);
 //	HAL_UART_Receive_IT(&huart10, &Joy_data, 1);
 
 	PID_Init();
-//  ��ʱ2s���ڵȴ���������ϵ�
+//  延时2s用于等待步进电机上电,考虑到实际过程中步进电机先于32上电,32需要手动发车,因此不需要再延时等待
 //	HAL_Delay(2000);
 
 	/* USER CODE END 2 */
@@ -233,33 +195,32 @@ int main(void)
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-// 		����׼�����������öκ���
+// 		检测准备发车标志位,如果准备发车,则调用Check_Status()函数将车身调整为准备比赛姿态
 		if (Ready_Flag == 1)
 		{
 			Ready_Flag = 0;
-//			��������
 			Check_Status();
 		}
-// 		���·��������öκ���
+// 		检测发车标志位
 		if (System_Flag == 1)
 		{
 			System_Flag = 0;
-//			��TX2�����ַ���"e1f"
-			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,
-					0x1000);
-			/***********************���������߼�״̬��*************************/
+//			向TX2发送字符串 "e1f"开始执行程序
+			HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,0x1000);
+			/************************************************/
 			while (1)
 			{
 				switch (flag)
 				{
-				case 0:  //����������ɨ����
-//					X�Ὠ���ƶ���150����
+				case 0:  //发车, 先左移, 然后直行, 进入扫码区域
 				// Move_TO_Saomaqu(2400, 8250);
+				// BUG:遇到左移后,步进电机没有移动到目标点位,没有返回到位标志，但是卡住不动的情况, 记录在Bug.md中的 E项
 					bool temp = Move_Left(RunSpeed, RunAcc, 2400);
 					while (temp != true)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}
+				// 左移完成后,向前移动,同时将机械臂调整为扫码姿态
 					Start();
 					flag = 1;
 					break;
