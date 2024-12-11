@@ -110,7 +110,7 @@ void catch_Second(uint16_t Pos1, uint16_t Pos2) //从地上抓取到车上
 extern int QR_Flag;
 void Start(void) //下降14000
 {
-//	HAL_Delay(2000);
+	// 向前移动到扫码区域
 	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
 	while(temp != true)
 	{
@@ -120,14 +120,14 @@ void Start(void) //下降14000
 	Drop_Location_jiang(200, 120, 4000);
 //	将舵机向外转动
 	FT_Servo_Orth();
-//	HAL_Delay(2000);
 	Drop_Location_jiang(200, 120, 12000);
 	Move_Arm(1, 500, 300); //爪子张开
 	Move_Arm(6, 500, 300);
-//	Move_Line(RunSpeed, RunAcc, 8250);
-//	while (!QR_Flag)
-//		;  //等待扫码完成
-//	扫码完成后将爪子提起俩
+	while (QR_Flag == false)
+	{
+		;  //等待扫码完成
+	}
+	// 扫码完成后将爪子提起来
 	Drop_Location_jiang(200, 120, 8600);
 	Move_Arm(6, 900, 300);
 }
