@@ -237,6 +237,7 @@ bool Base_Data = false;
 bool Top_Data = false;
 // 允许查询状态标志位
 extern bool Call_Flag;
+
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
 //	提取FIFO中的数据,
@@ -291,7 +292,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 			{
 				if (rxdata[2] == 0x6B)
 				{
-//				到位数据接收完毕，底盘步进确认到位
+//				到位数据接收完毕，升降步进确认到位
 					Top_Data = true;
 					RxState = 0;
 				}

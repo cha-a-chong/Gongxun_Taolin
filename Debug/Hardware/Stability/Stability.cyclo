@@ -1,9 +1,8 @@
-../Hardware/Stability/Stability.c:12:8:calculate_mean	2
-../Hardware/Stability/Stability.c:21:8:calculate_variance	2
-../Hardware/Stability/Stability.c:31:9:Check_Stability	6
-../Hardware/Stability/Stability.c:71:9:Check_Status	1
-../Hardware/Stability/Stability.c:87:9:Roll_Status	1
-../Hardware/Stability/Stability.c:105:9:FT_Servo_Zero	3
-../Hardware/Stability/Stability.c:115:9:FT_Servo_Orth	1
-../Hardware/Stability/Stability.c:122:9:FT_Servo_Put	8
-../Hardware/Stability/Stability.c:144:9:FT_Servo_Wait_Zero	3
+../Hardware/Stability/Stability.c:39:9:Check_Stability	7
+../Hardware/Stability/Stability.c:93:9:Check_Status	1
+../Hardware/Stability/Stability.c:109:9:Roll_Status	1
+../Hardware/Stability/Stability.c:126:9:put_Status	1
+../Hardware/Stability/Stability.c:139:9:FT_Servo_Zero	3
+../Hardware/Stability/Stability.c:149:9:FT_Servo_Orth	1
+../Hardware/Stability/Stability.c:156:9:FT_Servo_Put	8
+../Hardware/Stability/Stability.c:178:9:FT_Servo_Wait_Zero	3

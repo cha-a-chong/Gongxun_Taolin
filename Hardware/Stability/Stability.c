@@ -8,31 +8,45 @@
 #include "Stability.h"
 #include "Stability_sub.h"
 
-// 计算平均值
-double calculate_mean(double data[], int n) {
-    double sum = 0.0;
-    for (int i = 0; i < n; i++) {
-        sum += data[i];
-    }
-    return sum / n;
-}
+// // 计算平均值
+// double calculate_mean(double data[], int n) {
+//     double sum = 0.0;
+//     for (int i = 0; i < n; i++) {
+//         sum += data[i];
+//     }
+//     return sum / n;
+// }
 
- // 计算方差
-double calculate_variance(double data[], int n) {
-     double mean = calculate_mean(data, n);
-     double sum_of_squares = 0.0;
-     for (int i = 0; i < n; i++) {
-         sum_of_squares += (data[i] - mean) * (data[i] - mean);
-     }
-     return sum_of_squares / n;
-}
+//  // 计算方差
+// double calculate_variance(double data[], int n) {
+//      double mean = calculate_mean(data, n);
+//      double sum_of_squares = 0.0;
+//      for (int i = 0; i < n; i++) {
+//          sum_of_squares += (data[i] - mean) * (data[i] - mean);
+//      }
+//      return sum_of_squares / n;
+// }
 
-//  使用方差判断稳定性
+//计算距离
+//double calDist(double data[], doubl)
+
+/*																																				ttxQWQ534
+HACK: 
+使用方差判断稳定性，稳定性较好，但是不太适用于需要尽快反应的系统，不建议使用，可以试试采集两个坐标点后，直接计算距离，如果距离小于某个阈值，则判定为稳定，
+可以尝试使用卡尔曼滤波等方法,如果物料转走的话，距离值肯定是大于稳定时波动的距离的，而且计算量较小，采集数据时间消耗少，可以考虑使用，缺点是不是特别稳定，
+不适用于对稳定性要求高的系统
+*/
 uint8_t Check_Stability(float check_x,float check_y,uint8_t Check_flag)
 {
-	static float data_x[10];
-	static float data_y[10];
+	// static float data_x[10];
+	// static float data_y[10];
+	static float data_x[2];
+	static float data_y[2];
 	static uint8_t frequency = 0;
+	if (tx2_empty_recv_cnt >= 5)														//如果tx2超过5帧没有检测到目标，则判定为尚未稳定 			ttxQWQ534
+	{
+		return 1;
+	}
 //	不满足计算稳定性的条件，清空缓冲区并结束
 	if(Check_flag != 1)
 	{
@@ -43,11 +57,19 @@ uint8_t Check_Stability(float check_x,float check_y,uint8_t Check_flag)
 		}
 		return 1;
 	}
-	if(frequency <= 9)
+// 	if(frequency <= 9)
+// 	{
+// 		data_x[frequency] = check_x;
+// 		data_y[frequency] = check_y;
+// //		0说明数据量过少
+// 		return 0;
+// 	}
+	if(frequency <= 1)
 	{
-		data_x[frequency] = check_x;
+		data_x[frequency] =check_x;
 		data_y[frequency] = check_y;
-//		0说明数据量过少
+		frequency++;
+		//0说明数据量过少
 		return 0;
 	}
 //	显式类型转换，调用函数获得方差
@@ -99,6 +121,18 @@ uint8_t Roll_Status(void)
 	Drop_Location_jiang(200, 120, 7000);
 //	Choke_Flag = false;
 	return 1;
+}
+
+uint8_t put_Status(void)
+{
+	//爪子提升, 开始识别(函数实现为阻塞, 速度略慢)
+	Drop_Location_jiang(200, 120, 1000);
+	//	将舵机向外转动
+	FT_Servo_Orth();
+    //步进电机下降
+	Drop_Location_jiang(200, 120, 12000);
+    //爪子张开
+	Move_Arm(1, 500, 300);
 }
 
 // 将目标舵机回零

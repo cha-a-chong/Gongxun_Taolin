@@ -9,16 +9,14 @@
 #include "Bool.h"
 #include "main.h"
 
-
-
 /* ------ Work Log -------- */
 /*
-TODO: 实现步进电机底盘运动的非阻塞函数
+ TODO: 实现步进电机底盘运动的非阻塞函数
 
 
 
 
-*/
+ */
 
 // 阻塞操作标志位 false表示 非阻塞，true表示阻塞
 bool Choke_Flag = false;
@@ -26,8 +24,6 @@ bool Choke_Flag = false;
 bool Apply_Chock = false;
 // 接收回调进行检测
 bool Call_Flag = false;
-
-
 
 int time5_jiancha = 0;
 
@@ -76,8 +72,8 @@ uint8_t GetRxFlag(void) {
 
 bool Move_Line(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
-	if(Choke_Flag == true)
-		return  false;
+	if (Choke_Flag == true)
+		return false;
 	else
 		Choke_Flag = true;
 	// 无阻塞操作，申请阻塞
@@ -96,8 +92,8 @@ bool Move_Line(u16 speed, u8 acc, u32 length) {
 }
 bool Move_Left(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
-	if(Choke_Flag == true)
-		return  false;
+	if (Choke_Flag == true)
+		return false;
 	else
 		Choke_Flag = true;
 	// 无阻塞操作，申请阻塞
@@ -117,8 +113,8 @@ bool Move_Left(u16 speed, u8 acc, u32 length) {
 
 bool Move_Back(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
-	if(Choke_Flag == true)
-		return  false;
+	if (Choke_Flag == true)
+		return false;
 	else
 		Choke_Flag = true;
 	// 无阻塞操作，申请阻塞
@@ -136,10 +132,10 @@ bool Move_Back(u16 speed, u8 acc, u32 length) {
 	return true;
 }
 
-bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)  {
+bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
-	if(Choke_Flag == true)
-		return  false;
+	if (Choke_Flag == true)
+		return false;
 	else
 		Choke_Flag = true;
 	// 无阻塞操作，申请阻塞
@@ -187,7 +183,6 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)  {
 
 // 	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
 
-
 // 	Emm_mode = 1;
 // 	time5_jiancha = (time + 800) / 10;
 // 	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
@@ -196,41 +191,82 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)  {
 // 	HAL_Delay(30);
 // }
 
-void Move_Right(u16 speed, u8 acc, u32 length) {
-	int time;
-	time = length / speed * 20;  //毫秒
+bool Move_Right(u16 speed, u8 acc, u32 length) {
+	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
+	if (Choke_Flag == true)
+		return false;
+	else
+		Choke_Flag = true;
+	// 无阻塞操作，申请阻塞
+	Apply_Chock = true;
+	// 底盘步进电机移动
 	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
-
+	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-
-
-	Emm_mode = 1;
-	time5_jiancha = (time + 800) / 10;
-	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
-		;
-//	RxFlag = 0;
-	HAL_Delay(30);
+	// 使能阻塞定时器中断
+	HAL_TIM_Base_Start_IT(&htim12);
+	Call_Flag = true;
+	return true;
 }
-void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
-	int time;
-	time = length / speed * 20;  //毫秒
+//void Move_Right(u16 speed, u8 acc, u32 length) {
+//	int time;
+//	time = length / speed * 20;  //毫秒
+//	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+//
+//	Emm_V5_Synchronous_motion();
+//
+//
+//	Emm_mode = 1;
+//	time5_jiancha = (time + 800) / 10;
+//	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
+//		;
+////	RxFlag = 0;
+//	HAL_Delay(30);
+//}
+
+bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
+	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
+	if (Choke_Flag == true)
+		return false;
+	else
+		Choke_Flag = true;
+	// 无阻塞操作，申请阻塞
+	Apply_Chock = true;
+	// 底盘步进电机移动
 	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
-
-	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
-
-	Emm_mode = 1;
-	time5_jiancha = (time + 800) / 10;
-	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
-		;
-//	RxFlag = 0;
-	HAL_Delay(30);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	// 使能阻塞定时器中断
+	HAL_TIM_Base_Start_IT(&htim12);
+	Call_Flag = true;
+	return true;
 }
+//void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
+//	int time;
+//	time = length / speed * 20;  //毫秒
+//	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+//	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+//
+//	Emm_V5_Synchronous_motion(); // 触发多机同步开始运动
+//
+//	Emm_mode = 1;
+//	time5_jiancha = (time + 800) / 10;
+//	while ((GetRxFlag() == 0) && (time5_jiancha != 0))
+//		;
+////	RxFlag = 0;
+//	HAL_Delay(30);
+//}
 
 //void Move_fanxuzhuan(u16 speed, u8 acc, u32 length) //4340是90度
 //{
@@ -252,7 +288,7 @@ void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
 ////	RxFlag = 0;
 //	HAL_Delay(30);
 //}
-uint16_t High_Length=0;
+uint16_t High_Length = 0;
 //void Move_Xiajiang(u16 speed, u8 acc, u32 length) {
 //	int time;
 //	time = length / speed * 20;  //毫秒
@@ -303,49 +339,44 @@ void motor_clear_all(void) {
 /*********************************************/
 
 /******************______速度模式控制______***************************/
-void Move_Val_Line(u16 speed, u8 acc)
-{
-	Emm_V5_Vel_Control(1, 0, speed,acc,true);
-	Emm_V5_Vel_Control(2, 0, speed,acc,true);
-	Emm_V5_Vel_Control(3, 0, speed,acc,true);
-	Emm_V5_Vel_Control(4, 0, speed,acc,true);
+void Move_Val_Line(u16 speed, u8 acc) {
+	Emm_V5_Vel_Control(1, 0, speed, acc, true);
+	Emm_V5_Vel_Control(2, 0, speed, acc, true);
+	Emm_V5_Vel_Control(3, 0, speed, acc, true);
+	Emm_V5_Vel_Control(4, 0, speed, acc, true);
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Back(u16 speed, u8 acc)
-{
-	Emm_V5_Vel_Control(1, 1, speed,acc,true);
-	Emm_V5_Vel_Control(2, 1, speed,acc,true);
-	Emm_V5_Vel_Control(3, 1, speed,acc,true);
-	Emm_V5_Vel_Control(4, 1, speed,acc,true);
+void Move_Val_Back(u16 speed, u8 acc) {
+	Emm_V5_Vel_Control(1, 1, speed, acc, true);
+	Emm_V5_Vel_Control(2, 1, speed, acc, true);
+	Emm_V5_Vel_Control(3, 1, speed, acc, true);
+	Emm_V5_Vel_Control(4, 1, speed, acc, true);
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Left(u16 speed, u8 acc)
-{
-	Emm_V5_Vel_Control(1, 1, speed,acc,true);
-	Emm_V5_Vel_Control(2, 0, speed,acc,true);
-	Emm_V5_Vel_Control(3, 1, speed,acc,true);
-	Emm_V5_Vel_Control(4, 0, speed,acc,true);
+void Move_Val_Left(u16 speed, u8 acc) {
+	Emm_V5_Vel_Control(1, 1, speed, acc, true);
+	Emm_V5_Vel_Control(2, 0, speed, acc, true);
+	Emm_V5_Vel_Control(3, 1, speed, acc, true);
+	Emm_V5_Vel_Control(4, 0, speed, acc, true);
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Right(u16 speed, u8 acc)
-{
-	Emm_V5_Vel_Control(1, 0, speed,acc,true);
-	Emm_V5_Vel_Control(2, 1, speed,acc,true);
-	Emm_V5_Vel_Control(3, 0, speed,acc,true);
-	Emm_V5_Vel_Control(4, 1, speed,acc,true);
+void Move_Val_Right(u16 speed, u8 acc) {
+	Emm_V5_Vel_Control(1, 0, speed, acc, true);
+	Emm_V5_Vel_Control(2, 1, speed, acc, true);
+	Emm_V5_Vel_Control(3, 0, speed, acc, true);
+	Emm_V5_Vel_Control(4, 1, speed, acc, true);
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
 
-void Move_Stop(void)
-{
-	Emm_V5_Stop_Now(1,true);
-	Emm_V5_Stop_Now(2,true);
-	Emm_V5_Stop_Now(3,true);
-	Emm_V5_Stop_Now(4,true);
+void Move_Stop(void) {
+	Emm_V5_Stop_Now(1, true);
+	Emm_V5_Stop_Now(2, true);
+	Emm_V5_Stop_Now(3, true);
+	Emm_V5_Stop_Now(4, true);
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 }
 /*********************_______END_________************************/
@@ -369,7 +400,7 @@ void Move_GO(void) {
 }
 extern void Start(void);
 void Move_TO_Saomaqu(float Leftclk, float Lineclk) {
-	Move_Left(RunSpeed, RunAcc, Leftclk);                                                                                         //爪子目前在最低处
+	Move_Left(RunSpeed, RunAcc, Leftclk);                             //爪子目前在最低处
 	HAL_Delay(20);
 //	HAL_Delay(yanshi);
 
@@ -385,158 +416,252 @@ void Move_TO_yuanliaoqu(float Lineclk) //物料区
 void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 {
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
-	while(temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
-	while(temp != true)
-	{
+	while (temp != true) {
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	}
 }
 
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 {
-	Move_Line(RunSpeed, RunAcc, Lineclk);
-	HAL_Delay(3000);
+	bool temp = Move_Line(RunSpeed, RunAcc, Lineclk);
+	while (temp != true) {
+		temp = Move_Line(RunSpeed, RunAcc, Lineclk);
+	}
 //	旋转
-	Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
-	HAL_Delay(yanshi);
+	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	while (temp != true) {
+		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	}
 }
 void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
-	Move_Back(RunSpeed, RunAcc, Backclk);
-	HAL_Delay(yanshi);
-	Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
-	HAL_Delay(yanshi);
+	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	while (temp != true) {
+		temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	}
+	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+//	while (temp != true) {
+//		Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+//	}
 }
 void Move_TO_cujiagongqu(float Backclk) //粗加工区
 {
-	Move_Back(RunSpeed, RunAcc, Backclk);
-	HAL_Delay(yanshi);
+	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	while (temp != true) {
+		Move_Back(RunSpeed, RunAcc, Backclk);
+	}
+	// Move_Back(RunSpeed, RunAcc, Backclk);
+	// HAL_Delay(yanshi);
 }
 void Move_TO_jianzhi3(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
-	Move_Back(RunSpeed, RunAcc, Backclk);
-	HAL_Delay(yanshi);
-	Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
-	HAL_Delay(yanshi);
+	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	while (temp != true) {
+		Move_Back(RunSpeed, RunAcc, Backclk);
+	}
+	// Move_Back(RunSpeed, RunAcc, Backclk);
+	// HAL_Delay(yanshi);
+	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+	while (temp != true) {
+		Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+	}
+//	 Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+//	 HAL_Delay(yanshi);
 }
-void Move_TO_fanyuanliaoqu(float Lineclk) //物料区
+void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 {
-	Move_Back(RunSpeed, RunAcc, Lineclk);
-	HAL_Delay(20000);
+	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	while (temp != true) {
+		Move_Back(RunSpeed, RunAcc, Backclk);
+	}
+	// Move_Back(RunSpeed, RunAcc, Lineclk);
+	// HAL_Delay(20000);
 }
 
-void Move_Action_Left_Ctrl(void) {
+// void Move_Action_Left_Ctrl(void) {
 
-	if (X_out > 0) {
-		Move_Left(100, 100, X_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Right(100, 100, -X_out);
-		HAL_Delay(yanshi);
-	}
-	if (Y_out > 0) {
-		Move_Line(100, 100, Y_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Back(100, 100, -Y_out);
-		HAL_Delay(yanshi);
-	}
-}
+// 	if (X_out > 0) {
+// 		Move_Left(100, 100, X_out);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Right(100, 100, -X_out);
+// 		HAL_Delay(yanshi);
+// 	}
+// 	if (Y_out > 0) {
+// 		Move_Line(100, 100, Y_out);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Back(100, 100, -Y_out);
+// 		HAL_Delay(yanshi);
+// 	}
+// }
 
-void Move_Action_Forward_Ctrl(void) {
+// void Move_Action_Forward_Ctrl(void) {
 
-	if (X_out > 0) {
-		Move_Line(100, 100, X_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Back(100, 100, -X_out);
-		HAL_Delay(yanshi);
-	}
-	if (Y_out > 0) {
-		Move_Right(100, 100, Y_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Left(100, 100, -Y_out);
-		HAL_Delay(yanshi);
-	}
+// 	if (X_out > 0) {
+// 		bool temp = Move_Line(100, 100, X_out);
+// 		while(temp != true)
+// 		{
+// 			temp = Move_Line(100, 100, X_out);
+// 		}
+// 	} else {
+// 		temp = Move_Back(100, 100, -X_out);
+// 		while(temp != true)
+// 		{
+// 			temp = Move_Back(100, 100, -X_out);
+// 		}
+// 		// Move_Back(100, 100, -X_out);
+// 		// HAL_Delay(yanshi);
+// 	}
+// 	if (Y_out > 0) {
+// 		temp = Move_Right(100, 100, Y_out);
+// 		while(temp != true)
+// 		{
+// 			temp = Move_Right(100, 100, Y_out);
+// 		}
+// 		// Move_Right(100, 100, Y_out);
+// 		// HAL_Delay(yanshi);
+// 	} else {
+// 		temp = Move_Left(100, 100, -Y_out);
+// 		while(temp != true)
+// 		{
+// 			temp = Move_Left(100, 100, -Y_out);
+// 		}
+// 		// Move_Left(100, 100, -Y_out);
+// 		// HAL_Delay(yanshi);
+// 	}
 
-}
-void Move_Action_Right_Ctrl(void) {
-	if (X_out > 0) {
-		Move_Right(100, 100, X_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Left(100, 100, -X_out);
-		HAL_Delay(yanshi);
-	}
-	if (Y_out > 0) {
-		Move_Back(100, 100, Y_out);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Line(100, 100, -Y_out);
-		HAL_Delay(yanshi);
-	}
-}
+// }
+// void Move_Action_Right_Ctrl(void) {
+// 	if (X_out > 0) {
+
+// 		Move_Right(100, 100, X_out);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Left(100, 100, -X_out);
+// 		HAL_Delay(yanshi);
+// 	}
+// 	if (Y_out > 0) {
+// 		Move_Back(100, 100, Y_out);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Line(100, 100, -Y_out);
+// 		HAL_Delay(yanshi);
+// 	}
+// }
 #define		ABS(x)		((x) > 0 ? (x) : -(x))
-void put_location(float x_goal, float y_goal) {
-	if ((X_NOW - x_goal) < 0) {
+#define Action_Speed 100
+#define Action_Acc 100
 
-		Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Left(100, 100, ABS(X_NOW - x_goal) * 13.8);
-		HAL_Delay(yanshi);
-	}
-	if ((Y_NOW - y_goal) < 0) {
-		Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-		HAL_Delay(yanshi);
-	} else {
-		Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-		HAL_Delay(yanshi);
-	}
-}
+// void put_location(float x_goal, float y_goal) {
+// 	if ((X_NOW - x_goal) < 0) {
+
+// 		Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Left(100, 100, ABS(X_NOW - x_goal) * 13.8);
+// 		HAL_Delay(yanshi);
+// 	}
+// 	if ((Y_NOW - y_goal) < 0) {
+// 		Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+// 		HAL_Delay(yanshi);
+// 	} else {
+// 		Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+// 		HAL_Delay(yanshi);
+// 	}
+// }
+//这个函数是爪子朝向左边时，也就是在原料区进行ACTION调整的
 void Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal) {
 	while (1) {
+
 		if ((X_NOW - x_goal) < 0) {
-			Move_Left(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Left(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Left(Action_Speed, Action_Acc,
+						ABS(X_NOW - x_goal) * 13.8);
+			}
 		} else {
-			Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Right(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Right(Action_Speed, Action_Acc,
+						ABS(X_NOW - x_goal) * 13.8);
+			}
+
+			// Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if (Y_NOW - y_goal < 0) {
-			Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Line(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Line(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		} else {
-			Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Back(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Back(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if ( ABS(X_NOW - x_goal) < 2 && ABS(Y_NOW - y_goal) < 2) {
 			break; /* 到达目标 */
 		}
 	}
 }
+//这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
 void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal) {
 	//ACTION调整
 	while (1) {
 
 		if ((X_NOW - x_goal) < 0) {
-			Move_Line(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Line(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Line(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Line(100, 100, ABS(X_NOW - x_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		} else {
-			Move_Back(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Back(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Back(Action_Speed, Action_Acc,
+						ABS(X_NOW - x_goal) * 13.8);
+			}
+			// Move_Back(100, 100, ABS(X_NOW - x_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if ((Y_NOW - y_goal) < 0) {
-			Move_Right(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Right(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Right(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Right(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		} else {
-			Move_Left(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Left(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Left(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Left(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if ( ABS(X_NOW - x_goal) < 5 && ABS(Y_NOW - y_goal) < 5) {
 			break; /* 到达目标 */
@@ -547,19 +672,42 @@ void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal) {
 void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal) {
 	while (1) {
 		if ((X_NOW - x_goal) < 0) {
-
-			Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Right(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Right(Action_Speed, Action_Acc,
+						ABS(X_NOW - x_goal) * 13.8);
+			}
+			// Move_Right(100, 100, ABS(X_NOW - x_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		} else {
-			Move_Left(100, 100, ABS(X_NOW - x_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Left(Action_Speed, Action_Acc,
+					ABS(X_NOW - x_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Left(Action_Speed, Action_Acc,
+						ABS(X_NOW - x_goal) * 13.8);
+			}
+			// Move_Left(100, 100, ABS(X_NOW - x_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if ((Y_NOW - y_goal) < 0) {
-			Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Back(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Back(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Back(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		} else {
-			Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
-			HAL_Delay(yanshi);
+			bool temp = Move_Line(Action_Speed, Action_Acc,
+					ABS(Y_NOW - y_goal) * 13.8);
+			while (temp != true) {
+				temp = Move_Line(Action_Speed, Action_Acc,
+						ABS(Y_NOW - y_goal) * 13.8);
+			}
+			// Move_Line(100, 100, ABS(Y_NOW - y_goal) * 13.8);
+			// HAL_Delay(yanshi);
 		}
 		if ( ABS(X_NOW - x_goal) < 5 && ABS(Y_NOW - y_goal) < 5) {
 			break; /* 到达目标 */
@@ -568,108 +716,143 @@ void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal) {
 }
 
 /* Tx姿态调整 */
-uint16_t time_tx=0;
-void Move_Tx_Pid_Ctrl(float TX_X_Goal,float TX_Y_Goal) {
+//
+uint16_t time_tx = 0;
+void Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal) {
 
 	while (1) {
-	if (TX_Y_out >= 0) {
-			Move_Right(80, 80, TX_Y_out * 5);
-			HAL_Delay(5);
+		if (TX_Y_out >= 0) {
+			bool temp = Move_Right(100, 120, TX_Y_out * 5);
+			while (temp != true) {
+				temp = Move_Right(100, 120, TX_Y_out * 5);
+			}
+			// Move_Right(80, 80, TX_Y_out * 5);
+			// HAL_Delay(5);
 		} else {
-			Move_Left(80, 80, -TX_Y_out * 5);
-			HAL_Delay(5);
+			bool temp = Move_Left(100, 120, -TX_Y_out * 5);
+			while (temp != true) {
+				temp = Move_Left(100, 120, -TX_Y_out * 5);
+			}
+			// Move_Left(80, 80, -TX_Y_out * 5);
+			// HAL_Delay(5);
 		}
 
 		if (TX_X_out >= 0) {
-			Move_Back(80, 80, TX_X_out * 5);
-			HAL_Delay(5);
-		} else {
-			Move_Line(80, 80, -TX_X_out * 5);
-			HAL_Delay(5);
-		}
-
-		if (ABS(Tx_NOW - 370.5) < 5 && ABS(Ty_NOW -230.5) < 5) {
-			break;
-		}
-		if(time_tx>=250)
-		{time_tx=0;
-			break;
-		}
-	}
-
-}
-
-void Move_Tx_NO_Pid_Ctrl(float x2 ,float y2) {
-	while (1) {
-	if ((Tx_NOW - x2)< 0) {
-			Move_Right(80, 80, ABS(Tx_NOW - x2) * 10);
-			HAL_Delay(yanshi);
-		} else {
-			Move_Left(80, 80, ABS(Tx_NOW - x2) * 10);
-			HAL_Delay(yanshi);
-		}
-
-		if ((Ty_NOW - y2) < 0) {
-			Move_Back(80, 80, ABS(Ty_NOW - y2) * 10);
-			HAL_Delay(yanshi);
-		} else {
-			Move_Line(80, 80, ABS(Ty_NOW - y2) * 10 );
-			HAL_Delay(yanshi);
-		}
-
-		if (ABS(Tx_NOW - x2) < 2 && ABS(Ty_NOW - y2) < 2) {
-			break;
-		}
-	}
-}
-
-
-void Move_Tx_Val_Ctrl(float* tx_target,float* ty_target,float x1,float y1) {
-	 if (tx_target != NULL && ty_target != NULL)
-	 {
-	*tx_target = x1;
-	*ty_target = y1;
-	 }
-	while (1) {
-	if (TX_Y_out >= 0) {
-			Move_Val_Right(50, 50);
-			HAL_Delay(yanshi);
-		} else {
-			Move_Val_Left(50, 50);
-			HAL_Delay(yanshi);
-		}
-
-		if (TX_X_out >= 0) {
-			Move_Val_Back(50, 50);
-			HAL_Delay(yanshi);
-		} else {
-			Move_Val_Line(50, 50);
-			HAL_Delay(yanshi);
-		}
-		if (ABS(Tx_NOW - x1) < 5 && ABS(Ty_NOW - y1) < 5) {
-			Move_Stop();
-			break;
-		}
-	}
-}
-
-void Move_Tx_Ctrl(void){
-	if (TX_Y_out >= 0) {
-				Move_Right(80, 80, TX_Y_out * 2);
-				HAL_Delay(yanshi);
-			} else {
-				Move_Left(80, 80, -TX_Y_out * 2);
-				HAL_Delay(yanshi);
+			bool temp = Move_Back(100, 120, TX_X_out * 5);
+			while (temp != true) {
+				temp = Move_Back(100, 120, TX_X_out * 5);
 			}
-
-			if (TX_X_out >= 0) {
-				Move_Back(80, 80, TX_X_out * 2);
-				HAL_Delay(yanshi);
-			} else {
-				Move_Line(80, 80, -TX_X_out * 2);
-				HAL_Delay(yanshi);
+			// Move_Back(80, 80, TX_X_out * 5);
+			// HAL_Delay(5);
+		} else {
+			bool temp = Move_Line(100, 120, -TX_X_out * 5);
+			while (temp != true) {
+				temp = Move_Line(100, 120, -TX_X_out * 5);
 			}
+			// Move_Line(80, 80, -TX_X_out * 5);
+			// HAL_Delay(5);
+		}
 
+		if (ABS(Tx_NOW - 311.5) < 5 && ABS(Ty_NOW -125.5) < 5) {
+			break;
+		}
+		//这里是防止调节时间过长所加的
+		// if(time_tx>=250)
+		// {time_tx=0;
+		// 	break;
+		// }
+	}
 
 }
 
+/* -----查询爪子处步进电机是否到位 -----*/
+//// 爪子处步进电机阻塞标志位
+//bool Yaw_Choke_Flag;
+//
+//// 申请五号步进电机进行阻塞
+//bool Apply_Yaw_Choke(void)
+//{
+//	if(Yaw_Choke_Flag == true)
+//		return  true;
+//	else
+//		Yaw_Choke_Flag = true;
+//	while(Status == false)
+//	{
+//		// 申请失败,我再来看看怎么个事儿
+//		Status = Apply_Yaw_Choke();
+//	}
+//	return false;
+//}
+//bool Get_Paw_Status(void)
+//{
+//	bool Status = Apply_Yaw_Choke();
+//
+//
+//}
+
+// void Move_Tx_NO_Pid_Ctrl(float x2 ,float y2) {
+// 	while (1) {
+// 	if ((Tx_NOW - x2)< 0) {
+// 			Move_Right(80, 80, ABS(Tx_NOW - x2) * 10);
+// 			HAL_Delay(yanshi);
+// 		} else {
+// 			Move_Left(80, 80, ABS(Tx_NOW - x2) * 10);
+// 			HAL_Delay(yanshi);
+// 		}
+// 		if ((Ty_NOW - y2) < 0) {
+// 			Move_Back(80, 80, ABS(Ty_NOW - y2) * 10);
+// 			HAL_Delay(yanshi);
+// 		} else {
+// 			Move_Line(80, 80, ABS(Ty_NOW - y2) * 10 );
+// 			HAL_Delay(yanshi);
+// 		}
+// 		if (ABS(Tx_NOW - x2) < 2 && ABS(Ty_NOW - y2) < 2) {
+// 			break;
+// 		}
+// 	}
+// }
+
+// void Move_Tx_Val_Ctrl(float* tx_target,float* ty_target,float x1,float y1) {
+// 	 if (tx_target != NULL && ty_target != NULL)
+// 	 {
+// 	*tx_target = x1;
+// 	*ty_target = y1;
+// 	 }
+// 	while (1) {
+// 	if (TX_Y_out >= 0) {
+// 			Move_Val_Right(50, 50);
+// 			HAL_Delay(yanshi);
+// 		} else {
+// 			Move_Val_Left(50, 50);
+// 			HAL_Delay(yanshi);
+// 		}
+// 		if (TX_X_out >= 0) {
+// 			Move_Val_Back(50, 50);
+// 			HAL_Delay(yanshi);
+// 		} else {
+// 			Move_Val_Line(50, 50);
+// 			HAL_Delay(yanshi);
+// 		}
+// 		if (ABS(Tx_NOW - x1) < 5 && ABS(Ty_NOW - y1) < 5) {
+// 			Move_Stop();
+// 			break;
+// 		}
+// 	}
+// }
+// void Move_Tx_Ctrl(void){
+// 	if (TX_Y_out >= 0) {
+// 				Move_Right(80, 80, TX_Y_out * 2);
+// 				HAL_Delay(yanshi);
+// 			} else {
+// 				Move_Left(80, 80, -TX_Y_out * 2);
+// 				HAL_Delay(yanshi);
+// 			}
+// 			if (TX_X_out >= 0) {
+// 				Move_Back(80, 80, TX_X_out * 2);
+// 				HAL_Delay(yanshi);
+// 			} else {
+// 				Move_Line(80, 80, -TX_X_out * 2);
+// 				HAL_Delay(yanshi);
+// 			}
+
+// }
