@@ -58,8 +58,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGI0 PD */
-#define RunSpeed 80
-#define RunAcc 64
+#define RunSpeed 100
+#define RunAcc 120
 #define yanshi 50
 
 //第一次跑，二维码数据取前三个，QR_Add为0
@@ -224,6 +224,7 @@ int main(void)
 		{
 			Ready_Flag = 0;
 			Check_Status();
+			Move_TO_zancunqu(22000, 4335);
 		}
 // 		检测发车标志位
 		if (System_Flag == 1)
@@ -285,7 +286,12 @@ int main(void)
 					Roll_Status();
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
-					Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					bool action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					while(action_temp == false)
+					{
+						HAL_Delay(10);
+						action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					}
 					flag = 3;
 					break;
 				case 3:    // 离开十字区域,进入暂存区

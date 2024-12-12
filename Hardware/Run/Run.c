@@ -448,12 +448,14 @@ void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 {
 	bool temp = Move_Line(RunSpeed, RunAcc, Lineclk);
+	HAL_Delay(8000);
 	while (temp != true)
 	{
 		temp = Move_Line(RunSpeed, RunAcc, Lineclk);
 	}
 //	旋转
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	HAL_Delay(8000);
 	while (temp != true)
 	{
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
@@ -612,100 +614,113 @@ void Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 		uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
 		uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
 //		差值满足要求, 结束调节
-		if(( X_Diff <  3 ) && ( Y_Diff < 3 ))
+		if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
 			return;
 
 		// 当前X坐标小于目标X
 		if ((X_NOW - x_goal) < 0)
 		{
-			bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 13.8);
+			bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
 			while (temp != true)
 			{
-				temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 13.8);
+				temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
 			}
 		}
 		// 当前X坐标大于目标X
 		else if ((X_NOW - x_goal) > 0)
 		{
-			bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 13.8);
+			bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
 			while (temp != true)
 			{
-				temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 13.8);
+				temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
 			}
 		}
 		// 当前Y坐标小于目标Y
 		if (Y_NOW - y_goal < 0)
 		{
-			bool temp = Move_Line(Action_Speed, Action_Acc,
-			ABS(Y_NOW - y_goal) * 13.8);
+			bool temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
 			while (temp != true)
 			{
-				temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 13.8);
+				temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
 			}
 		}
 		// 当前Y坐标大于目标Y
-		else
+		else if (Y_NOW - y_goal > 0)
 		{
-			bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 13.8);
+			bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 5);
 			while (temp != true)
 			{
-				temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 13.8);
+				temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);
 			}
 		}
 
 	}
 }
 //这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
-void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
+bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 {
 	//ACTION调整
 	//		取X,Y差值
 	uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
 	uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
-	while (1)
+	if (( X_Diff < 5 ) && ( Y_Diff < 5))
 	{
-		if (( X_Diff < 5 ) && ( Y_Diff < 5))
-		{
-			break; /* 到达目标 */
-		}
-		// 当前X坐标小于目标X
+		return true; /* 到达目标 */
+	}
+//	X差值不满足要求
+	if ( X_Diff >= 5 )
+	{
+//		X与当前目标值差值小于0
 		if ((X_NOW - x_goal) < 0)
 		{
-			bool temp = Move_Line(Action_Speed, Action_Acc, X_Diff * 13.8);
+			bool temp = Move_Line(Action_Speed, Action_Acc, X_Diff* 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Line(Action_Speed, Action_Acc, X_Diff * 13.8);
+				temp = Move_Line(Action_Speed, Action_Acc, X_Diff * 3);
 			}
+			return false;
 		}
 		// 当前X坐标大于目标X
-		else
+		else if ((X_NOW - x_goal) > 0)
 		{
-			bool temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 13.8);
+			bool temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 13.8);
+				temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 3);
 			}
+			return false;
 		}
+	}
+	else if ( Y_Diff >= 5 )
+	{
 		// 当前Y坐标小于目标Y
 		if ((Y_NOW - y_goal) < 0)
 		{
-			bool temp = Move_Right(Action_Speed, Action_Acc,Y_Diff * 13.8);
+			bool temp = Move_Right(Action_Speed, Action_Acc,Y_Diff * 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Right(Action_Speed, Action_Acc, Y_Diff * 13.8);
+				temp = Move_Right(Action_Speed, Action_Acc, Y_Diff * 3);
 			}
+			return false;
 		}
 		// 当前Y坐标大于目标Y
-		else
+		else if (Y_NOW - y_goal > 0)
 		{
-			bool temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 13.8);
+			bool temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 13.8);
+				temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 3);
 			}
+			return false;
 		}
 	}
+	return false;
 }
+
 
 void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal)
 {
