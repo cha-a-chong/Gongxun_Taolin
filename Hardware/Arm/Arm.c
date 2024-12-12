@@ -110,7 +110,7 @@ void catch_Second(uint16_t Pos1, uint16_t Pos2) //从地上抓取到车上
 extern int QR_Flag;
 void Start(void) //下降14000
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "向前移动\n", sizeof("向前移动\n") - 1,0xffff);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "我来扫码辣\n", sizeof("我来扫码辣\n") - 1,0xffff);
 	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
 	HAL_Delay(50);
 	while(temp != true)

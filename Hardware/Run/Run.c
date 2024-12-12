@@ -459,14 +459,16 @@ void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 	{
 		temp = Move_Line(RunSpeed, RunAcc, Lineclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "我到色环喽\n", sizeof("我到色环楼喽\n") - 1,0xffff);
-	HAL_UART_Transmit(&huart10, (uint8_t*) "那我走？\n", sizeof("那我走？\n") - 1,0xffff);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "收到\n", sizeof("收到\n") - 1,0xffff);
 //	旋转
+	HAL_UART_Transmit(&huart10, (uint8_t*) "喜不喜欢我的反旋转\n", sizeof("喜不喜欢我的反旋转\n") - 1,0xffff);
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	HAL_Delay(50);
+
 	while (temp != true)
 	{
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+//		HAL_UART_Transmit(&huart10, (uint8_t*) "反选转的temp是false\n", sizeof("反选转的temp是false\n") - 1,0xffff);
 	}
 	HAL_UART_Transmit(&huart10, (uint8_t*) "转个45度给你看看\n", sizeof("转个45度给你看看\n") - 1,0xffff);
 }
@@ -480,6 +482,7 @@ void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到�
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
+//		HAL_UART_Transmit(&huart10, (uint8_t*) "后退的temp是false\n", sizeof("后退的temp是false\n") - 1,0xffff);
 	}
 	HAL_UART_Transmit(&huart10, (uint8_t*) "到位\n", sizeof("到位\n") - 1,0xffff);
 	HAL_UART_Transmit(&huart10, (uint8_t*) "来个正转给大家开开眼\n", sizeof("来个正转给大家开开眼\n") - 1,0xffff);
@@ -488,6 +491,7 @@ void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到�
 	while (temp != true)
 	{
 		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+//		HAL_UART_Transmit(&huart10, (uint8_t*) "正旋转的temp是false\n", sizeof("正旋转的temp是false\n") - 1,0xffff);
 	}
 	HAL_UART_Transmit(&huart10, (uint8_t*) "转晕了家人们\n", sizeof("转晕了家人们\n") - 1,0xffff);
 }
@@ -692,12 +696,23 @@ bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 	//		取X,Y差值
 	uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
 	uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
-	if (( X_Diff < 5 ) && ( Y_Diff < 5))
-	{
-		return true; /* 到达目标 */
-	}
+	char X_send[8];
+	char Y_send[8];
+	sprintf(X_send, "%d", X_Diff);
+	sprintf(Y_send, "%d", Y_Diff);
+	if( X_Diff <  10 )
+		HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+	if( Y_Diff <  10 )
+		HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+
+	if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
+		return true;
 //	X差值不满足要求
-	if ( X_Diff >= 5 )
+	if( X_Diff >=  10 )
 	{
 //		X与当前目标值差值小于0
 		if ((X_NOW - x_goal) < 0)
@@ -710,7 +725,7 @@ bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 			}
 			return false;
 		}
-		// 当前X坐标大于目标X
+			// 当前X坐标大于目标X
 		else if ((X_NOW - x_goal) > 0)
 		{
 			bool temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 3);
@@ -722,7 +737,7 @@ bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 			return false;
 		}
 	}
-	else if ( Y_Diff >= 5 )
+	if ( Y_Diff >= 10 )
 	{
 		// 当前Y坐标小于目标Y
 		if ((Y_NOW - y_goal) < 0)
