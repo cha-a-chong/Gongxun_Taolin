@@ -109,14 +109,17 @@ void QR_Show(void) {
 extern char Match_Flag;
 // 抓取计算稳定性标志位，0为识别有故障,1为正常计算
 extern char Check_flag;
+// 借用一下屏幕上的识别物料颜色，查看flag系统标志位
+extern uint16_t flag;
+
 // TODO：屏幕缺失字符"+",暂时判断为编码格式问题，需要通过串口助手确定编码格式
 void Point_Show(void) {
-	if(Point_Flag == 0)
-	{
-//		TX2点位数据还未接收，结束该函数
-		return ;
-	}
-	Point_Flag = 0;
+//	if(Point_Flag == 0)
+//	{
+////		TX2点位数据还未接收，结束该函数
+//		return ;
+//	}
+//	Point_Flag = 0;
 //	在抓取过程中,进行颜色校验，如果颜色与抓取目标颜色不同，则放弃该帧数据，并传递放弃稳定性计算标志位
 	if(Match_Flag != colour)
 		Check_flag = 0;
@@ -124,11 +127,14 @@ void Point_Show(void) {
 		Check_flag = 1;
 	sprintf(TX2_X_Point, "%.2f", x);
 	sprintf(TX2_Y_Point, "%.2f", y);
-	sprintf(TX2_Color, "%d", colour);
+	sprintf(TX2_Color, "%d", flag);
 //	开始发送一帧点位数据
 	HAL_UART_Transmit(&huart4, (uint8_t*) "Point.txt=\"",sizeof("Point.txt=\"") - 1, 0xffff);
-
-	HAL_UART_Transmit(&huart4, (uint8_t*) TX2_X_Point, sizeof(TX2_X_Point) - 2, 0xffff);
+	if(Choke_Flag == true)
+		HAL_UART_Transmit(&huart4, (uint8_t*) "true", sizeof("true") - 2, 0xffff);
+	else
+		HAL_UART_Transmit(&huart4, (uint8_t*) "false", sizeof("false") - 2, 0xffff);
+//	HAL_UART_Transmit(&huart4, (uint8_t*) TX2_X_Point, sizeof(TX2_X_Point) - 2, 0xffff);
 	HAL_UART_Transmit(&huart4, (uint8_t*) "+", sizeof("+")-2, 0xffff);
 	HAL_UART_Transmit(&huart4, (uint8_t*) TX2_Y_Point, sizeof(TX2_Y_Point) - 1, 0xffff);
 //	结束发送一帧点位数据

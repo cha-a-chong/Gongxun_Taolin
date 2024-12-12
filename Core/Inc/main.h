@@ -28,10 +28,10 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
-#include <Bool.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Bool.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,7 +58,7 @@ extern bool Choke_Flag;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-// 串口�???大接收数�???
+// 串口�????大接收数�????
 #define RXBUFFERSIZE  256
 
 /* USER CODE END EFP */

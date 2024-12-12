@@ -57,19 +57,7 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-/* USER CODE BEGI0 PD */
-#define RunSpeed 100
-#define RunAcc 120
-#define yanshi 50
-
-//第一次跑，二维码数据取前三个，QR_Add为0
-#define Frist_Run 0
-//第二次跑，二维码数据取后三个，QR_Add为3
-#define Second_Run 3
-//粗加工区第一次跑，将物料放在圆环上
-#define Put_circular 0
-//粗加工区第二次跑，将物料堆磊放在物料上
-#define Put_Material 1
+/* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
 
@@ -90,14 +78,14 @@ float x = .0;
 float y = .0;
 char Point_Flag = 0;
 
-// 调试过程中,屏蔽二维码输入
+// 调试过程�?,屏蔽二维码输�?
 //char QR_data[6] = { 0, 0, 0, 0, 0, 0 };
 int QR_data[6] =
 { 1, 2, 3, 1, 2, 3 };
 char tx2_empty_recv_cnt = 0; //tx2未检测到目标物体时返回的标志的计数器，在接收到正常坐标时应该清零											ttxQWQ534
-// PID调整目标值
+// PID调整目标�?
 float x_goal, y_goal, a_goal;
-// TODO:根据调试过程确定X与Y轴的目标值
+// TODO:根据调试过程确定X与Y轴的目标�?
 float tx_target = 311.5;
 float ty_target = 125.5;
 uint16_t flag = 0;
@@ -105,18 +93,18 @@ uint16_t TX_flag = 0;
 int colour;
 int wuliao_falg;
 
-// 调试过程中,屏蔽二维码输入
+// 调试过程�?,屏蔽二维码输�?
 //int QR_Flag = 0;
 int QR_Flag = 1;
 
-// TX2使能标志位, 暂时忽略TX2输入
+// TX2使能标志�?, 暂时忽略TX2输入
 bool TX2_ENABLE = false;
 
 // 正式比赛前车身姿态调整标志位
 extern uint8_t Ready_Flag;
-// 抓取过程标志位
+// 抓取过程标志�?
 bool Match_Flag = false;
-// 抓取过程稳定性标志位,false为有故障,true为可以抓取
+// 抓取过程稳定性标志位,false为有故障,true为可以抓�?
 bool Check_flag = false;
 /* USER CODE END PM */
 
@@ -139,56 +127,57 @@ static void MPU_Config(void);
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE BEGIN 1 */
 
-	/* MPU Configuration--------------------------------------------------------*/
-	MPU_Config();
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MPU Configuration--------------------------------------------------------*/
+  MPU_Config();
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* USER CODE BEGIN Init */
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE END Init */
+  /* USER CODE BEGIN Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* USER CODE END Init */
 
-	/* USER CODE BEGIN SysInit */
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
 	// USART10 用于Action串口转发,暂时使用无线串口将数据转发到主机
-	// TODO:根据通信质量的稳定性决定是否要更换为有线USB转TTL
-	/* USER CODE END SysInit */
+	// TODO:根据通信质量的稳定�?�决定是否要更换为有线USB转TTL
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_FDCAN1_Init();
-	MX_UART4_Init();
-	MX_UART5_Init();
-	MX_UART9_Init();
-	MX_USART6_UART_Init();
-	MX_USART10_UART_Init();
-	MX_TIM2_Init();
-	MX_USART3_UART_Init();
-	MX_UART7_Init();
-	MX_UART8_Init();
-	MX_TIM3_Init();
-	MX_TIM5_Init();
-	MX_USART2_UART_Init();
-	MX_TIM12_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_FDCAN1_Init();
+  MX_UART4_Init();
+  MX_UART5_Init();
+  MX_UART9_Init();
+  MX_USART6_UART_Init();
+  MX_USART10_UART_Init();
+  MX_TIM2_Init();
+  MX_USART3_UART_Init();
+  MX_UART7_Init();
+  MX_UART8_Init();
+  MX_TIM3_Init();
+  MX_TIM5_Init();
+  MX_USART2_UART_Init();
+  MX_TIM12_Init();
+  /* USER CODE BEGIN 2 */
 
 //	清除定时器初始化过程中的更新中断标志
 	__HAL_TIM_CLEAR_IT(&htim2, TIM_IT_UPDATE);
-//	使能定时器中断
+//	使能定时器中�?
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim5);
 	HAL_TIM_Base_Start_IT(&htim3);
@@ -202,35 +191,35 @@ int main(void)
 //	HAL_UART_Receive_IT(&huart10, &Joy_data, 1);
 
 	PID_Init();
-//  延时2s用于等待步进电机上电,考虑到实际过程中步进电机先于32上电,32需要手动发车,因此不需要再延时等待
+//  延时2s用于等待步进电机上电,考虑到实际过程中步进电机先于32上电,32�?要手动发�?,因此不需要再延时等待
 //	HAL_Delay(2000);
 
-	/* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-// 		检测准备发车标志位,如果准备发车,则调用Check_Status()函数将车身调整为准备比赛姿态
+    /* USER CODE BEGIN 3 */
+// 		�?测准备发车标志位,如果准备发车,则调用Check_Status()函数将车身调整为准备比赛姿�??
 //  	TODO:调整该函数体位置, 使之可以全局响应
-// 			解决方案: 在屏幕解析函数中, 如果发车标志位被使能, 则使能某一定时器中断函数, 然后在定时器中断函数中先失能自己, 
-// 					 再调用下面的函数体,从而做到节省系统资源的同时进行函数的全局单次响应
-// 		FIXME:将该函数修改为全局响应需要考虑到在响应时, 车身其他资源是否会被影响, 即在响应的过程中, 物料等会不会把爪子卡住, 导致舵机过流
-// 			  舵机过流后需要过一段时间才能对舵机进行读写
+// 			解决方案: 在屏幕解析函数中, 如果发车标志位被使能, 则使能某�?定时器中断函�?, 然后在定时器中断函数中先失能自己, 
+// 					 再调用下面的函数�?,从�?�做到节省系统资源的同时进行函数的全�?单次响应
+// 		FIXME:将该函数修改为全�?响应�?要�?�虑到在响应�?, 车身其他资源是否会被影响, 即在响应的过程中, 物料等会不会把爪子卡�?, 导致舵机过流
+// 			  舵机过流后需要过�?段时间才能对舵机进行读写
 		if (Ready_Flag == 1)
 		{
 			Ready_Flag = 0;
 			Check_Status();
 
 		}
-// 		检测发车标志位
+// 		�?测发车标志位
 		if (System_Flag == 1)
 		{
 			System_Flag = 0;
-//			向TX2发送字符串 "e1f"开始执行程序
+//			向TX2发�?�字符串 "e1f"�?始执行程�?
 			if (TX2_ENABLE == true)
 				HAL_UART_Transmit(&huart10, (uint8_t*) "e1f", sizeof("elf") - 1,
 						0x1000);
@@ -239,9 +228,9 @@ int main(void)
 			{
 				switch (flag)
 				{
-				case 0:  //发车, 先左移, 然后直行, 进入扫码区域
+				case 0:  //发车, 先左�?, 然后直行, 进入扫码区域
 					// Move_TO_Saomaqu(2400, 8250);
-					// BUG:遇到左移后,步进电机没有移动到目标点位,没有返回到位标志，但是卡住不动的情况, 记录在Bug.md中的 E项
+					// BUG:遇到左移�?,步进电机没有移动到目标点�?,没有返回到位标志，但是卡住不动的情况, 记录在Bug.md中的 E�?
 					// 
 					HAL_UART_Transmit(&huart10, (uint8_t*) "发车, 向左移动\n", sizeof("发车, 向左移动\n") - 1,0xffff);
 					bool temp = Move_Left(RunSpeed, RunAcc, 2400);
@@ -251,13 +240,13 @@ int main(void)
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}
 					HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
-					// 左移完成后,向前移动,同时将机械臂调整为扫码姿态
+					// 左移完成�?,向前移动,同时将机械臂调整为扫码姿�?
 					Start();
 					flag = 1;
 					break;
-				case 1:  //离开扫码区,进入暂存区抓取物料
-					// 向前移动,非阻塞
-					HAL_UART_Transmit(&huart10, (uint8_t*) "向扫码区出发\n", sizeof("向扫码区出发\n") - 1,0xffff);
+				case 1:  //离开扫码�?,进入暂存区抓取物�?
+					// 向前移动,非阻�?
+					HAL_UART_Transmit(&huart10, (uint8_t*) "物料我来啦\n", sizeof("物料我来啦\n") - 1,0xffff);
 					temp = Move_Line(RunSpeed, RunAcc, 10500);
 					HAL_Delay(50);
 					while (temp != true)
@@ -265,13 +254,13 @@ int main(void)
 						temp = Move_Line(RunSpeed, RunAcc, 10500);
 					}
 					HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
-					// Choke_Flag = true说明当前底盘步进电机被阻塞
-					// TODO:其实我感觉这个while没有用, 但是也不会影响什么, 单纯看着占位置, 检测完没有用后可以删掉这里
+					// Choke_Flag = true说明当前底盘步进电机被阻�?
+					// TODO:其实我感觉这个while没有�?, 但是也不会影响什�?, 单纯看着占位�?, �?测完没有用后可以删掉这里
 					while (Choke_Flag == true)
 					{
 						;
 					}
-					//	等待TX2返回物料坐标点信息
+					//	等待TX2返回物料坐标点信�?
 					if (TX2_ENABLE == true)
 					{
 						while (Point_Flag != 1)
@@ -279,17 +268,18 @@ int main(void)
 							;
 						}
 					}
-					// TODO:调试,根据TX2返回坐标点信息进行车身调整,待物料稳定后抓取物料
-					// 这里是否需要先根据Action进行一次坐标的调整? x:150 y:1450
+					// TODO:调试,根据TX2返回坐标点信息进行车身调�?,待物料稳定后抓取物料
+					// 这里是否�?要先根据Action进行�?次坐标的调整? x:150 y:1450
 					HAL_UART_Transmit(&huart10, (uint8_t*) "进入PID调节\n", sizeof("进入PID调节\n") - 1,0xffff);
 					Move_Action_Nopid_Left_Ctrl(150, 1450);
 					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 //					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
-				case 2:  // 离开原料区,进入十字区
+				case 2:  // 离开原料�?,进入十字�?
+					HAL_UART_Transmit(&huart10, (uint8_t*) "物料抓完了,我走了\n", sizeof("物料抓完了,我走了\n") - 1,0xffff);
 					Move_TO_jianzhi1(4500, 4335);
-					// 车身状态回滚为爪子向内的状态
+					// 车身状�?�回滚为爪子向内的状�?
 					Roll_Status();
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
@@ -304,18 +294,18 @@ int main(void)
 					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 					flag = 3;
 					break;
-				case 3:    // 离开十字区域,进入暂存区
-//					BUG:转90度变成转45度,但是单独拉出来没有问题?
+				case 3:    // 离开十字区域,进入暂存�?
+//					BUG:�?90度变成转45�?,但是单独拉出来没有问�??
 
 					Move_TO_zancunqu(22000, 4335);
-//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
+//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色�?
 					// HACK: 我认为这里的代码有需要求改的地方,但缺少更好的底层
-					// 逻辑分析:在车身到暂存区的路径上,在旋转的过程中就可以将摄像头转向色环
+					// 逻辑分析:在车身到暂存区的路径�?,在旋转的过程中就可以将摄像头转向色环
 					// 将物料从车上放到目标区域
 //					put_Material_to_circular_Staging_Area_frist(Frist_Run);
-					// 将物料从目标区域抓取回车上
+					// 将物料从目标区域抓取回车�?
 //					Grab_Material_to_Car_Staging_Area_frist(Frist_Run);
-					// TODO: 延时需要修改
+					// TODO: 延时�?要修�?
 					HAL_Delay(500);
 					flag = 4;
 					break;
@@ -326,22 +316,22 @@ int main(void)
 					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 					flag = 5;
 					break;
-				case 5:		//移动到粗加工区       
+				case 5:		//移动到粗加工�?       
 					Move_TO_cujiagongqu(10000);
 					//调整车体，让爪子正交于车身，爪子位于底端张开
-//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
-					// 将物料放置到第一层
+//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色�?
+					// 将物料放置到第一�?
 //					put_Material_to_Circular_Rough_Processing_Area_frist(Frist_Run, Put_circular);
 					flag = 6;
 					break;
 				case 6:  //离开粗加工区，移到十字区
 					Move_TO_jianzhi3(9000, 4335);
 					Move_Action_Nopid_Left_Ctrl(170, 1860);
-					//TODO:在返回原料区之前，爪子首先要转过来正交于车身并且步进降到8600的位置，爪子张开，进行抓取物料
+					//TODO:在返回原料区之前，爪子首先要转过来正交于车身并且步进降到8600的位置，爪子张开，进行抓取物�?
 					Drop_Location_jiang(50, 50, 8600);
 					flag = 7;
 					break;
-				case 7:      //返回到原料区，进行第二次的抓取
+				case 7:      //返回到原料区，进行第二次的抓�?
 					Move_TO_fanyuanliaoqu(4000);
 					while (1)
 					{
@@ -351,25 +341,25 @@ int main(void)
 					//Second_Run_Frist_Grab_Wuliao();
 					flag = 8;
 					break;
-				case 8:  //第二次跑 离开原料区,进入十字区
+				case 8:  //第二次跑 离开原料�?,进入十字�?
 					Move_TO_jianzhi1(4500, 4335);
-					// 车身状态回滚为爪子向内的状态
+					// 车身状�?�回滚为爪子向内的状�?
 					Roll_Status();
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
 					Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					flag = 9;
 					break;
-				case 9:    //第二次跑，离开十字区，到达暂存区
+				case 9:    //第二次跑，离�?十字区，到达暂存�?
 					Move_TO_zancunqu(22000, 4335);
 					// 将物料从车上放到目标区域
-					put_Material_to_circular_Staging_Area_frist(Second_Run);
-					// 将物料从目标区域抓取回车上
-					Grab_Material_to_Car_Staging_Area_frist(Second_Run);
+//					put_Material_to_circular_Staging_Area_frist(Second_Run);
+					// 将物料从目标区域抓取回车�?
+//					Grab_Material_to_Car_Staging_Area_frist(Second_Run);
 					HAL_Delay(yanshi);
 					flag = 10;
 					break;
-				case 10:    //离开暂存区，到达十字区
+				case 10:    //离开暂存区，到达十字�?
 					Move_TO_jianzhi2(9000, 4335);
 					// 根据Action返回的坐标点进行校准     
 					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
@@ -377,19 +367,19 @@ int main(void)
 					break;
 				case 11:       //离开十字区，到达粗加工区
 					Move_TO_cujiagongqu(10000);
-					put_Material_to_Circular_Rough_Processing_Area_frist(
-					Second_Run, Put_Material);
+//					put_Material_to_Circular_Rough_Processing_Area_frist(
+//					Second_Run, Put_Material);
 					//放完物料后，车身回归起始模样
 					Check_Status();
 					flag = 12;
 					break;
-				case 12:       //离开粗加工区，到十字区
+				case 12:       //离开粗加工区，到十字�?
 					Move_TO_jianzhi3(9000, 4335);
 					// 根据Action返回的坐标点进行校准 
 					Move_Action_Nopid_Left_Ctrl(170, 1860);
 					flag = 13;
 					break;
-				case 13:      //直接回到启停区
+				case 13:      //直接回到启停�?
 					Move_TO_fanyuanliaoqu(22000);
 					flag = 14;
 					break;
@@ -486,69 +476,65 @@ int main(void)
 //					HAL_Delay(2000);
 		}
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
-	RCC_OscInitTypeDef RCC_OscInitStruct =
-	{ 0 };
-	RCC_ClkInitTypeDef RCC_ClkInitStruct =
-	{ 0 };
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-	/** Supply configuration update enable
-	 */
-	HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
+  /** Supply configuration update enable
+  */
+  HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
 
-	/** Configure the main internal regulator output voltage
-	 */
-	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
-	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY))
-	{
-	}
+  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 2;
-	RCC_OscInitStruct.PLL.PLLN = 44;
-	RCC_OscInitStruct.PLL.PLLP = 1;
-	RCC_OscInitStruct.PLL.PLLQ = 2;
-	RCC_OscInitStruct.PLL.PLLR = 2;
-	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
-	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-	RCC_OscInitStruct.PLL.PLLFRACN = 0;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 2;
+  RCC_OscInitStruct.PLL.PLLN = 44;
+  RCC_OscInitStruct.PLL.PLLP = 1;
+  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLR = 2;
+  RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
+  RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+  RCC_OscInitStruct.PLL.PLLFRACN = 0;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/** Initializes the CPU, AHB and APB buses clocks
-	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1
-			| RCC_CLOCKTYPE_D1PCLK1;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
-	RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
-	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
+                              |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -578,11 +564,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		// 更新UART4接收中断回调, 中断源UART4, 缓冲区Screen_data, 缓冲大小 1                   	   
 		HAL_UART_Receive_IT(&huart4, &Screen_data, 1);
 	}
-	// FIXME:滴滴, 注释补一下
+	// FIXME:滴滴, 注释补一�?
 	else if (huart->Instance == USART10)
 	{
 		//static uint8_t RxState = 0;
-		// 将缓冲区中的Action数据存入RxBuffer中
+		// 将缓冲区中的Action数据存入RxBuffer�?
 		RxBuffer[Uart10_Rx_Cnt++] = aRxBuffer;
 		//判断数组是否溢出，若溢出，则进行清零操作
 		if (Uart10_Rx_Cnt >= sizeof(RxBuffer))
@@ -591,9 +577,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			Uart10_Rx_Cnt = 0;
 			return;
 		}
-		//如果接收到的收据是包头为a,包尾为b,判断是否能正常接收坐标返回
+		//如果接收到的收据是包头为a,包尾为b,判断是否能正常接收坐标返�?
 		if (aRxBuffer == 'd')
-		{ // �����β??'d'��˵�������Ϻ�Բ����λ��??
+		{ // ������???'d'��˵�������Ϻ�Բ����λ��??
 			char *start = strchr(RxBuffer, 'a');
 			char *end = strchr(RxBuffer, 'd');
 
@@ -607,14 +593,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 					tx2_empty_recv_cnt = 0;	//接收到正常坐标返回时，a将tx2_empty_recv_cnt清零								12/11 ttxQWQ534
 				}
 
-				// ��ջ���??
+				// ��ջ���???
 				memset(RxBuffer, 0, sizeof(RxBuffer));
 				Uart10_Rx_Cnt = 0;
 			}
 		}
-		//如果接收到的收据是包头为c,包尾为b, 则进行二维码的数据存储
+		//如果接收到的收据是包头为c,包尾为b, 则进行二维码的数据存�?
 		if (aRxBuffer == 'b')
-		{ // �����β??'b'��˵���Ƕ�ά����??
+		{ // ������???'b'��˵���Ƕ�ά����??
 			char *start = strchr(RxBuffer, 'c');
 			char *end = strchr(RxBuffer, 'b');
 
@@ -633,12 +619,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				}
 
 //				}
-				// ��ջ���??
+				// ��ջ���???
 				memset(RxBuffer, 0, sizeof(RxBuffer));
 				Uart10_Rx_Cnt = 0;
 			}
 
-			if (aRxBuffer == 'h')//接收到包尾是h，说明接收到了tx2发送的未检测到目标物体的标志，则此中断每进一次，tx2_empty_recv_cnt要自增         	   12/11 ttxQWQ534
+			if (aRxBuffer == 'h')//接收到包尾是h，说明接收到了tx2发�?�的未检测到目标物体的标志，则此中断每进�?次，tx2_empty_recv_cnt要自�?         	   12/11 ttxQWQ534
 			{
 				char *start = strchr(RxBuffer, 'g');
 				char *end = strchr(RxBuffer, 'h');
@@ -657,7 +643,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		}
 
-//		if (aRxBuffer == 'h')				//接收到包尾是h，说明接收到了tx2发送的未检测到目标物体的标志，则此中断每进一次，tx2_empty_recv_cnt要自增         			12/11 ttxQWQ534
+//		if (aRxBuffer == 'h')				//接收到包尾是h，说明接收到了tx2发�?�的未检测到目标物体的标志，则此中断每进�?次，tx2_empty_recv_cnt要自�?         			12/11 ttxQWQ534
 //		{
 //			char *start = strchr(RxBuffer, 'g');
 //			char *end 	= strchr(RxBuffer, 'h');
@@ -675,11 +661,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //
 //		}
 	}
-	//	更新串口接收中断,中断触发源 UART10,接收数组 aRxBuffer,缓存大小 1
+	//	更新串口接收中断,中断触发�? UART10,接收数组 aRxBuffer,缓存大小 1
 	HAL_UART_Receive_IT(&huart10, (uint8_t*) &aRxBuffer, 1);
 }
 
-/*  ------------ 定时器中断回调函数 -----------*/
+/*  ------------ 定时器中断回调函�? -----------*/
 extern uint16_t time_tx;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -692,7 +678,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		A_out = A_Ctrl(&APID, a_goal);
 		// Action数据展示
 		Action_Show();
-		// 二维码数据展示
+		// 二维码数据展�?
 		QR_Show();
 		// 色环,物料坐标数据展示
 		Point_Show();
@@ -709,7 +695,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	// 如果中断源为TIM5
 	else if (htim == &htim5)
 	{
-		// TODO: 需要注释理解
+		// TODO: �?要注释理�?
 		if (time5_jiancha != 0)
 			time5_jiancha--;
 	}
@@ -722,22 +708,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			// 如果底层步进电机到位返回标志位为true
 			if (Base_Data == true)
 			{
-				// 取消阻塞状态,阻塞标志位记为false
+				// 取消阻塞状�??,阻塞标志位记为false
 				Choke_Flag = false;
 				// 申请阻塞查询标志位记为false
 				Apply_Chock = false;
 				// 关闭定时器中断
+				Base_Data = false;
 				HAL_TIM_Base_Stop_IT(&htim12);
 				// 重置底层步进电机到位返回标志位为false
-				Base_Data = false;
+
 			}
 			// 如果升降步进电机到位返回标志位为true
 			// if (Top_Data == true) {
-			// 	// 取消阻塞状态,阻塞标志位记为false
+			// 	// 取消阻塞状�??,阻塞标志位记为false
 			// 	Choke_Flag = false;
 			// 	// 申请阻塞查询标志位记为false
 			// 	Apply_Chock = false;
-			// 	// 关闭定时器中断
+			// 	// 关闭定时器中�?
 			// 	HAL_TIM_Base_Stop_IT(&htim12);
 			// 	// 重置底层步进电机到位返回标志位为false
 			// 	Base_Data = false;
@@ -768,7 +755,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //			}
 //		} else if (state == 1) { // ��������
 //			rx_buffer[rx_index++] = HwtData;
-//			if (rx_index == 2 && rx_buffer[1] != 0x53 && rx_buffer[1] != 0x52) { // ����ڶ��ֽڲ���0x53???0x52�������Ѱ����һ???0x55
+//			if (rx_index == 2 && rx_buffer[1] != 0x53 && rx_buffer[1] != 0x52) { // ����ڶ��ֽڲ���?0x53???0x52�������Ѱ�����????0x55
 //				if (rx_buffer[1] == 0x55) {
 //					rx_index = 1;
 //				} else {
@@ -793,49 +780,48 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //	}
 /* USER CODE END 4 */
 
-/* MPU Configuration */
+ /* MPU Configuration */
 
 void MPU_Config(void)
 {
-	MPU_Region_InitTypeDef MPU_InitStruct =
-	{ 0 };
+  MPU_Region_InitTypeDef MPU_InitStruct = {0};
 
-	/* Disables the MPU */
-	HAL_MPU_Disable();
+  /* Disables the MPU */
+  HAL_MPU_Disable();
 
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-	MPU_InitStruct.Number = MPU_REGION_NUMBER0;
-	MPU_InitStruct.BaseAddress = 0x0;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_4GB;
-	MPU_InitStruct.SubRegionDisable = 0x87;
-	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-	MPU_InitStruct.AccessPermission = MPU_REGION_NO_ACCESS;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  /** Initializes and configures the Region and the memory to be protected
+  */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+  MPU_InitStruct.BaseAddress = 0x0;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_4GB;
+  MPU_InitStruct.SubRegionDisable = 0x87;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.AccessPermission = MPU_REGION_NO_ACCESS;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-	/* Enables the MPU */
-	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+  /* Enables the MPU */
+  HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
 }
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
-	/* USER CODE BEGIN Error_Handler_Debug */
+  /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1)
 	{
 	}
-	/* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
