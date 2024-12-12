@@ -7,6 +7,7 @@
 
 #include "Stability.h"
 #include "Stability_sub.h"
+#include <math.h>
 
 // // 计算平均值
 // double calculate_mean(double data[], int n) {
@@ -27,8 +28,11 @@
 //      return sum_of_squares / n;
 // }
 
-//计算距离
-//double calDist(double data[], doubl)
+//使用曼哈顿算法估计距离,返回是否稳定的bool类型变量
+bool Manhattan(double * Manhattan_datax, double * Manhattan_datay)
+{
+	return ((fabs(Manhattan_datax[0] - Manhattan_datax[1]) + fabs(Manhattan_datay[0] - Manhattan_datay[1])) < 8) ? true : false;
+}
 
 /*																																				ttxQWQ534
 HACK: 
@@ -47,23 +51,16 @@ uint8_t Check_Stability(float check_x,float check_y,uint8_t Check_flag)
 	{
 		return 1;
 	}
-//	不满足计算稳定性的条件，清空缓冲区并结束
-	if(Check_flag != 1)
+	if (Check_flag != 1)
 	{
-		for(int i = 0;i<10;i++)
+		for (int i = 0; i < 2; i++)
 		{
 			data_x[i] = 0;
 			data_y[i] = 0;
 		}
+
 		return 1;
 	}
-// 	if(frequency <= 9)
-// 	{
-// 		data_x[frequency] = check_x;
-// 		data_y[frequency] = check_y;
-// //		0说明数据量过少
-// 		return 0;
-// 	}
 	if(frequency <= 1)
 	{
 		data_x[frequency] =check_x;
@@ -72,16 +69,42 @@ uint8_t Check_Stability(float check_x,float check_y,uint8_t Check_flag)
 		//0说明数据量过少
 		return 0;
 	}
-//	显式类型转换，调用函数获得方差
-	double variance_x = calculate_variance((double*)data_x, 10);
-	double variance_y = calculate_variance((double*)data_y, 10);
-	if((variance_x > 2) || (variance_y >2))
+	if (Manhattan(data_x, data_y))
 	{
-//		1说明还未稳定
-		return 1;
+		return 2;
 	}
 	else
-		return 2;
+	{
+		return 1;
+	}
+	
+//	不满足计算稳定性的条件，清空缓冲区并结束
+	// if(Check_flag != 1)
+	// {
+	// 	for(int i = 0;i<10;i++)
+	// 	{
+	// 		data_x[i] = 0;
+	// 		data_y[i] = 0;
+	// 	}
+	// 	return 1;
+	// }
+// 	if(frequency <= 9)
+// 	{
+// 		data_x[frequency] = check_x;
+// 		data_y[frequency] = check_y;
+// //		0说明数据量过少
+// 		return 0;
+// 	}
+// //	显式类型转换，调用函数获得方差
+// 	double variance_x = calculate_variance((double*)data_x, 10);
+// 	double variance_y = calculate_variance((double*)data_y, 10);
+// 	if((variance_x > 2) || (variance_y >2))
+// 	{
+// //		1说明还未稳定
+// 		return 1;
+// 	}
+// 	else
+// 		return 2;
 }
 
 // 检查当前车身状态
@@ -125,14 +148,14 @@ uint8_t Roll_Status(void)
 
 uint8_t put_Status(void)
 {
-	//爪子提升, 开始识别(函数实现为阻塞, 速度略慢)
+	//爪子提升, 开始识别(函数实现为阻塞, 速度略慢) 
 	Drop_Location_jiang(200, 120, 1000);
 	//	将舵机向外转动
 	FT_Servo_Orth();
     //步进电机下降
 	Drop_Location_jiang(200, 120, 12000);
     //爪子张开
-	Move_Arm(1, 500, 300);
+	Move_Arm(1, 500, 300); 
 }
 
 // 将目标舵机回零

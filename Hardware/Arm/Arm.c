@@ -112,7 +112,7 @@ void Start(void) //下降14000
 {
 	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
 	//	先将爪子升起来，避免打到TX2或者物料盘
-	Drop_Location_jiang(200, 120, 4000);
+	Drop_Location_jiang(320, 160, 4000);
 	//	将舵机向外转动
 	FT_Servo_Orth();
 	while(temp != true)
@@ -121,15 +121,16 @@ void Start(void) //下降14000
 	}
 	Move_Arm(1, 500, 300); //爪子张开
 	Move_Arm(6, 500, 300);
-	Drop_Location_jiang(200, 120, 12000);
+	Drop_Location_jiang(320, 160, 12000);
 	// 向前移动到扫码区域
 	while (QR_Flag == false)
 	{
 		;  //等待扫码完成
 	}
 	// 扫码完成后将爪子提起来
-	Drop_Location_jiang(200, 120, 8600);
 	Move_Arm(6, 900, 300);
+	Drop_Location_jiang(320, 160, 8600);
+	
 }
 void put(uint16_t Pos1, uint16_t Pos2) {
 	WritePosEx(0, Pos1, 1000, 100); //物料底盘移动
@@ -243,7 +244,7 @@ void Frist_Grab_Wuliao(void) {
 	// 上升
 	Drop_Location_jiang(200, 120, 1000);
 	// 向右转，与车身正交
-	if(Grab_count < 3)
+	if(Grab_count +1 < 3)
 	{
 		FT_Servo_Orth();
 		Drop_Location_jiang(200, 120, 8600);

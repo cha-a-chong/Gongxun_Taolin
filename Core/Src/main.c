@@ -57,9 +57,9 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-#define RunSpeed 100
-#define RunAcc 120
+/* USER CODE BEGI0 PD */
+#define RunSpeed 80
+#define RunAcc 64
 #define yanshi 50
 
 //第一次跑，二维码数据取前三个，QR_Add为0
@@ -108,7 +108,7 @@ int wuliao_falg;
 int QR_Flag = 1;
 
 // TX2使能标志位, 暂时忽略TX2输入
-bool TX2_ENABLE = true;
+bool TX2_ENABLE = false;
 
 // 正式比赛前车身姿态调整标志位
 extern uint8_t Ready_Flag;
@@ -277,18 +277,18 @@ int main(void) {
 					break;
 				case 3:    // 离开十字区域,进入暂存区
 					Move_TO_zancunqu(22000, 4335);
-					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
+//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
 					// HACK: 我认为这里的代码有需要求改的地方,但缺少更好的底层
 					// 逻辑分析:在车身到暂存区的路径上,在旋转的过程中就可以将摄像头转向色环
 					// 将物料从车上放到目标区域
-					put_Material_to_circular_Staging_Area_frist(Frist_Run);
+//					put_Material_to_circular_Staging_Area_frist(Frist_Run);
 					// 将物料从目标区域抓取回车上
-					Grab_Material_to_Car_Staging_Area_frist(Frist_Run);
+//					Grab_Material_to_Car_Staging_Area_frist(Frist_Run);
 					// TODO: 延时需要修改
 					HAL_Delay(500);
 					flag = 4;
 					break;
-				case 4:
+				case 4:	//出暂存区
 					Move_TO_jianzhi2(9000, 4335);
 					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
 					flag = 5;
@@ -296,23 +296,25 @@ int main(void) {
 				case 5:		//移动到粗加工区       
 					Move_TO_cujiagongqu(10000);
 					//调整车体，让爪子正交于车身，爪子位于底端张开
-					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
+//					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
 					// 将物料放置到第一层
-					put_Material_to_Circular_Rough_Processing_Area_frist(
-							Frist_Run, Put_circular);
+//					put_Material_to_Circular_Rough_Processing_Area_frist(Frist_Run, Put_circular);
 					flag = 6;
 					break;
 				case 6:  //离开粗加工区，移到十字区
 					Move_TO_jianzhi3(9000, 4335);
 					Move_Action_Nopid_Left_Ctrl(170, 1860);
-					Drop_Location_jiang(50, 50, 11000);
-
+					//TODO:在返回原料区之前，爪子首先要转过来正交于车身并且步进降到8600的位置，爪子张开，进行抓取物料
+					Drop_Location_jiang(50, 50, 8600);
 					flag = 7;
 					break;
-					//TODO:在返回原料区之前，爪子首先要转过来正交于车身并且步进降到8600的位置，爪子张开，进行抓取物料
 				case 7:      //返回到原料区，进行第二次的抓取
 					Move_TO_fanyuanliaoqu(4000);
-					Move_Action_Nopid_Left_Ctrl(150, 1450);      //ACTION����
+					while(1)
+					{
+						;
+					}
+//					Move_Action_Nopid_Left_Ctrl(150, 1450);      //ACTION����
 					//Second_Run_Frist_Grab_Wuliao();
 					flag = 8;
 					break;

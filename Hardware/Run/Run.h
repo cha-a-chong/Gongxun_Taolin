@@ -20,9 +20,8 @@
 extern int time5_jiancha;
 
 
-
-#define RunSpeed 100
-#define RunAcc 120
+#define RunSpeed 80
+#define RunAcc 64
 
 
 //位置模式

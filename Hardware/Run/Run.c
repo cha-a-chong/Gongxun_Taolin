@@ -416,6 +416,7 @@ void Move_TO_yuanliaoqu(float Lineclk) //物料区
 void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 {
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	HAL_Delay(5);
 	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
@@ -444,9 +445,9 @@ void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到�
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
-//	while (temp != true) {
-//		Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
-//	}
+	while (temp != true) {
+		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+	}
 }
 void Move_TO_cujiagongqu(float Backclk) //粗加工区
 {
@@ -461,13 +462,13 @@ void Move_TO_jianzhi3(float Backclk, float Zhengzhuanclk) //从暂存区回到�
 {
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	while (temp != true) {
-		Move_Back(RunSpeed, RunAcc, Backclk);
+		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
 	// Move_Back(RunSpeed, RunAcc, Backclk);
 	// HAL_Delay(yanshi);
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	while (temp != true) {
-		Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	}
 //	 Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 //	 HAL_Delay(yanshi);
@@ -476,7 +477,7 @@ void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 {
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	while (temp != true) {
-		Move_Back(RunSpeed, RunAcc, Backclk);
+		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
 	// Move_Back(RunSpeed, RunAcc, Lineclk);
 	// HAL_Delay(20000);
@@ -624,7 +625,6 @@ void Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal) {
 void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal) {
 	//ACTION调整
 	while (1) {
-
 		if ((X_NOW - x_goal) < 0) {
 			bool temp = Move_Line(Action_Speed, Action_Acc,
 					ABS(X_NOW - x_goal) * 13.8);
