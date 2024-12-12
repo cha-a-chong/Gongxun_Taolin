@@ -41,4 +41,24 @@ void Second_Run_put_wuliao_to_Car_frist(void);
 void Second_Run_put_wuliao_to_circular_frist(void);
 void Second_Run_put_wuliao_to_circular_second(void);
 
+
+
+//TO Circular
+//第一次跑在暂存区将物料放在圆环上
+//若要第二次跑，主要是要改变一下数组的次序
+//TODO：在此函数执行前，必须确保爪子在底部并张开，进行物料的识别
+void put_Material_to_circular_Staging_Area_frist(int QR_Add);
+
+//TO Car
+//第一次跑在暂存区区将物料放在车上
+//若要第二次跑，主要是要改变一下数组的次序
+//TODO：在此函数执行前，必须确保爪子在底部并张开，进行物料的识别
+void Grab_Material_to_Car_Staging_Area_frist(int QR_Add);
+
+//TO Circular
+//第一次跑在粗加工区区将物料放在圆环上
+//若要第二次跑，主要是要改变一下数组的次序
+//TODO：在此函数执行前，必须确保爪子在底部并张开，进行物料的识别
+void put_Material_to_Circular_Rough_Processing_Area_frist(int QR_Add,int iswuliao);
+
 #endif /* ARM_ARM_H_ */

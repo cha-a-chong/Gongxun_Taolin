@@ -20,9 +20,8 @@
 extern int time5_jiancha;
 
 
-
-#define RunSpeed 100
-#define RunAcc 120
+#define RunSpeed 80
+#define RunAcc 64
 
 
 //位置模式
@@ -30,8 +29,8 @@ bool Move_Line(u16 speed, u8 acc, u32 length);
 bool Move_Left(u16 speed, u8 acc, u32 length);
 //void Move_Left(u16 speed, u8 acc, u32 length);
 bool Move_Back(u16 speed, u8 acc, u32 length);
-void Move_Right(u16 speed, u8 acc, u32 length);
-void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length);
+bool Move_Right(u16 speed, u8 acc, u32 length);
+bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length);
 bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length);
 void Move_Xiajiang(u16 speed, u8 acc, u32 length);
 void Drop_Location_jiang(u16 speed, u8 acc, u32 length);
