@@ -8,7 +8,7 @@
 #include "Run.h"
 #include "Bool.h"
 #include "main.h"
-
+#include "stdio.h"
 /* ------ Work Log -------- */
 /*
  TODO: 实现步进电机底盘运动的非阻塞函数
@@ -24,6 +24,8 @@ bool Choke_Flag = false;
 bool Apply_Chock = false;
 // 接收回调进行检测
 bool Call_Flag = false;
+// 多机同步运动标志位
+extern uint8_t broadcast_flag;
 
 int time5_jiancha = 0;
 
@@ -700,15 +702,16 @@ bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 	char Y_send[8];
 	sprintf(X_send, "%d", X_Diff);
 	sprintf(Y_send, "%d", Y_Diff);
-	if( X_Diff <  10 )
+	if( X_Diff <  10 ){
 		HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
 		HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,0xffff);
 		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
-	if( Y_Diff <  10 )
+	}
+	if( Y_Diff <  10 ){
 		HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
 		HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,0xffff);
 		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
-
+	}
 	if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
 		return true;
 //	X差值不满足要求

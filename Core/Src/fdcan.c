@@ -236,12 +236,39 @@ bool Top_Data = false;
 // 允许查询状�?�标志位
 extern bool Call_Flag;
 
-//	误差符号�?
-extern uint8_t Err_Sybol;
+//	多机同步运动接收标志位，默认是0
+uint8_t broadcast_flag = 0;
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
 //	提取FIFO中的数据,
 	HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &fdcan_RxHeader, rxdata);
+	static uint8_t broadcast_status = 0;
+	if(fdcan_RxHeader.Identifier / 256 == 1)
+	{
+		if(broadcast_status == 0)
+		{
+			if(rxdata[0] == 0xFF)
+				broadcast_status = 1;
+			else
+				broadcast_status = 0;
+		}
+		else if (broadcast_status == 1)
+		{
+			if(rxdata[0] == 0x02)
+				broadcast_status = 2;
+			else
+				broadcast_status = 0;
+		}
+		else if(broadcast_status == 2)
+		{
+			if(rxdata[0] == 0x6B){
+				broadcast_status = 0;
+				broadcast_flag = 1;
+			}
+			else
+				broadcast_status = 0;
+		}
+	}
 	if (Call_Flag == true)
 	{
 //	底盘步进电机帧头
@@ -281,6 +308,11 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 					;
 				}
 			}
+		}
+	}
+	HAL_FDCAN_ActivateNotification(hfdcan,
+	FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+}
 ////			位置误差读取
 //			else if (RxState == 3)
 //			{
@@ -294,7 +326,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 //				Err_Sybol = rxdata[1];
 //				RxState == 5;
 //			}
-		}
+//		}
 //	升降步进电机帧头
 //		else if (fdcan_RxHeader.Identifier / 256 == 5)
 //		{
@@ -322,9 +354,6 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 //				}
 //			}
 //		}
-	}
-	HAL_FDCAN_ActivateNotification(hfdcan,
-	FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
-}
+
 
 /* USER CODE END 1 */
