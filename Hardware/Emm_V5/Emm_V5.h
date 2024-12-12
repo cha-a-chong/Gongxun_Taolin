@@ -45,4 +45,6 @@ void Emm_V5_Origin_Trigger_Return(uint8_t addr, uint8_t o_mode, bool snF); // �
 void Emm_V5_Origin_Interrupt(uint8_t addr); // 强制中断并退出回零
 void Emm_V5_Get_Origin_Status(uint8_t addr);
 
+void Emm_V5_Get_Pos_Error(uint8_t addr);
+
 #endif

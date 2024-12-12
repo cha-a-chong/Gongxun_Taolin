@@ -432,78 +432,107 @@ void Move_TO_yuanliaoqu(float Lineclk) //物料区
 
 void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 {
+	HAL_UART_Transmit(&huart10, (uint8_t*) "我要后退喽\n", sizeof("我要后退喽\n") - 1,0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
-	HAL_Delay(5);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "我要转45度辣\n", sizeof("我要转45度辣\n") - 1,0xffff);
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
 }
 
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 {
+	HAL_UART_Transmit(&huart10, (uint8_t*) "向十字出发喽\n", sizeof("向十字出发喽\n") - 1,0xffff);
 	bool temp = Move_Line(RunSpeed, RunAcc, Lineclk);
-	HAL_Delay(8000);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Line(RunSpeed, RunAcc, Lineclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "我到色环喽\n", sizeof("我到色环楼喽\n") - 1,0xffff);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "那我走？\n", sizeof("那我走？\n") - 1,0xffff);
 //	旋转
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
-	HAL_Delay(8000);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "转个45度给你看看\n", sizeof("转个45度给你看看\n") - 1,0xffff);
 }
+
+
 void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
+	HAL_UART_Transmit(&huart10, (uint8_t*) "向粗加工区出发\n", sizeof("向粗加工区出发\n") - 1,0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "到位\n", sizeof("到位\n") - 1,0xffff);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "来个正转给大家开开眼\n", sizeof("来个正转给大家开开眼\n") - 1,0xffff);
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "转晕了家人们\n", sizeof("转晕了家人们\n") - 1,0xffff);
 }
 void Move_TO_cujiagongqu(float Backclk) //粗加工区
 {
+	HAL_UART_Transmit(&huart10, (uint8_t*) "粗加工区好难走啊\n", sizeof("粗加工区好难走啊\n") - 1,0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "你说的对\n", sizeof("你说的对\n") - 1,0xffff);
 	// Move_Back(RunSpeed, RunAcc, Backclk);
 	// HAL_Delay(yanshi);
 }
 void Move_TO_jianzhi3(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
+
+	HAL_UART_Transmit(&huart10, (uint8_t*) "到拐角了家人们\n", sizeof("到拐角了家人们\n") - 1,0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "滴滴\n", sizeof("滴滴\n") - 1,0xffff);
 	// Move_Back(RunSpeed, RunAcc, Backclk);
 	// HAL_Delay(yanshi);
+	HAL_UART_Transmit(&huart10, (uint8_t*) "欸我再转\n", sizeof("欸我再转\n") - 1,0xffff);
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	}
+	HAL_UART_Transmit(&huart10, (uint8_t*) "差不多要到了吧\n", sizeof("差不多要到了吧\n") - 1,0xffff);
 //	 Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 //	 HAL_Delay(yanshi);
 }
 void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 {
+	HAL_UART_Transmit(&huart10, (uint8_t*) "回到了梦开始的地方\n", sizeof("回到了梦开始的地方\n") - 1,0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
+	HAL_Delay(50);
 	while (temp != true)
 	{
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);

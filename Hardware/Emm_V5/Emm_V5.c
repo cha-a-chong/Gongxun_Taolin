@@ -384,3 +384,22 @@ void Emm_V5_Get_Origin_Status(uint8_t addr)
 	FDCAN_Send_Msg(cmd, 3);
 	HAL_Delay(5);
 }
+
+//extern bool Recive_Flag;
+//long int Emm_V5_Get_Pos_Error(uint8_t addr)
+//{
+////	读取位置误差
+//	cmd[0] = addr;
+//	cmd[1] = 0x35;
+//	cmd[2] = 0x6B;
+//	FDCAN_Send_Msg(cmd, 3);
+//
+//	HAL_Delay(5);
+//
+//	while(Recive_Flag == fasle)
+//	{
+//		;
+//	}
+//	long int Pos_Error = Get_Fifo_Error();
+//	return Pos_Error;
+//}

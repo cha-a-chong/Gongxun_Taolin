@@ -224,7 +224,7 @@ int main(void)
 		{
 			Ready_Flag = 0;
 			Check_Status();
-			Move_TO_zancunqu(22000, 4335);
+
 		}
 // 		检测发车标志位
 		if (System_Flag == 1)
@@ -243,22 +243,28 @@ int main(void)
 					// Move_TO_Saomaqu(2400, 8250);
 					// BUG:遇到左移后,步进电机没有移动到目标点位,没有返回到位标志，但是卡住不动的情况, 记录在Bug.md中的 E项
 					// 
+					HAL_UART_Transmit(&huart10, (uint8_t*) "发车, 向左移动\n", sizeof("发车, 向左移动\n") - 1,0xffff);
 					bool temp = Move_Left(RunSpeed, RunAcc, 2400);
+					HAL_Delay(50);
 					while (temp != true)
 					{
 						temp = Move_Left(RunSpeed, RunAcc, 2400);
 					}
+					HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
 					// 左移完成后,向前移动,同时将机械臂调整为扫码姿态
 					Start();
 					flag = 1;
 					break;
 				case 1:  //离开扫码区,进入暂存区抓取物料
 					// 向前移动,非阻塞
+					HAL_UART_Transmit(&huart10, (uint8_t*) "向扫码区出发\n", sizeof("向扫码区出发\n") - 1,0xffff);
 					temp = Move_Line(RunSpeed, RunAcc, 10500);
+					HAL_Delay(50);
 					while (temp != true)
 					{
 						temp = Move_Line(RunSpeed, RunAcc, 10500);
 					}
+					HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
 					// Choke_Flag = true说明当前底盘步进电机被阻塞
 					// TODO:其实我感觉这个while没有用, 但是也不会影响什么, 单纯看着占位置, 检测完没有用后可以删掉这里
 					while (Choke_Flag == true)
@@ -275,26 +281,32 @@ int main(void)
 					}
 					// TODO:调试,根据TX2返回坐标点信息进行车身调整,待物料稳定后抓取物料
 					// 这里是否需要先根据Action进行一次坐标的调整? x:150 y:1450
+					HAL_UART_Transmit(&huart10, (uint8_t*) "进入PID调节\n", sizeof("进入PID调节\n") - 1,0xffff);
 					Move_Action_Nopid_Left_Ctrl(150, 1450);
+					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 //					Frist_Grab_Wuliao();
 					flag = 2;
 					break;
-
 				case 2:  // 离开原料区,进入十字区
 					Move_TO_jianzhi1(4500, 4335);
 					// 车身状态回滚为爪子向内的状态
 					Roll_Status();
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
+					HAL_UART_Transmit(&huart10, (uint8_t*) "进入PID调节\n", sizeof("进入PID调节\n") - 1,0xffff);
 					bool action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					HAL_Delay(50);
 					while(action_temp == false)
 					{
 						HAL_Delay(10);
 						action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					}
+					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 					flag = 3;
 					break;
 				case 3:    // 离开十字区域,进入暂存区
+//					BUG:转90度变成转45度,但是单独拉出来没有问题?
+
 					Move_TO_zancunqu(22000, 4335);
 //					put_Status(); //爪子张开，张大一些，否则会导致在红色环识别到绿色环
 					// HACK: 我认为这里的代码有需要求改的地方,但缺少更好的底层
@@ -309,7 +321,9 @@ int main(void)
 					break;
 				case 4:	//出暂存区
 					Move_TO_jianzhi2(9000, 4335);
+					HAL_UART_Transmit(&huart10, (uint8_t*) "调个Action闭环\n", sizeof("调个Action闭环\n") - 1,0xffff);
 					Move_Action_Nopid_Forward_Ctrl(1870, 1860);
+					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 					flag = 5;
 					break;
 				case 5:		//移动到粗加工区       

@@ -238,6 +238,8 @@ bool Top_Data = false;
 // 允许查询状态标志位
 extern bool Call_Flag;
 
+//	误差符号帧
+extern uint8_t Err_Sybol;
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
 //	提取FIFO中的数据,
@@ -253,6 +255,12 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 				{
 					RxState = 1;
 				}
+				else if(rxdata[0] == 0x37)
+				{
+					RxState = 3;
+				}
+				else
+					RxState = 0;
 			}
 			if (RxState == 1)
 			{
@@ -261,7 +269,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 					RxState = 2;
 				}
 			}
-			if (RxState == 2)
+			else if (RxState == 2)
 			{
 				if (rxdata[2] == 0x6B)
 				{
@@ -269,7 +277,24 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 					Base_Data = true;
 					RxState = 0;
 				}
+				else
+				{
+					;
+				}
 			}
+////			位置误差读取
+//			else if (RxState == 3)
+//			{
+////				符号帧
+//				Err_Sybol = rxdata[1];
+//				RxState == 4;
+//			}
+//			else if (RxState == 4)
+//			{
+////				符号帧
+//				Err_Sybol = rxdata[1];
+//				RxState == 5;
+//			}
 		}
 //	升降步进电机帧头
 		else if (fdcan_RxHeader.Identifier / 256 == 5)
