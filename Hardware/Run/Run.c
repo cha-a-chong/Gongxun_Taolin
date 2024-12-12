@@ -89,6 +89,19 @@ bool Move_Line(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
@@ -110,6 +123,19 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
@@ -132,6 +158,19 @@ bool Move_Back(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
@@ -154,6 +193,19 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
@@ -214,6 +266,19 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
@@ -254,6 +319,19 @@ bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
+	HAL_Delay(50);
+	while(broadcast_flag == 0){
+		// 在broadcast_flag = 1时跳出去
+		HAL_Delay(200);
+		// 底盘步进电机移动
+		Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+		Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+		// 触发多机同步开始运动
+		Emm_V5_Synchronous_motion();
+	}
+	broadcast_flag = 0;
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
