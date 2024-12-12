@@ -111,17 +111,17 @@ extern int QR_Flag;
 void Start(void) //下降14000
 {
 	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
-	//	先将爪子升起来，避免打到TX2或者物料盘
-	Drop_Location_jiang(320, 160, 4000);
-	//	将舵机向外转动
-	FT_Servo_Orth();
 	while(temp != true)
 	{
 		temp = Move_Line(RunSpeed, RunAcc, 8250);
 	}
+	//	先将爪子升起来，避免打到TX2或者物料盘
+	Drop_Location_jiang(320, 160, 4000);
+	//	将舵机向外转动
+	FT_Servo_Orth();
 	Move_Arm(1, 500, 300); //爪子张开
 	Move_Arm(6, 500, 300);
-	Drop_Location_jiang(320, 160, 12000);
+	Drop_Location_jiang(320, 160, 11000);
 	// 向前移动到扫码区域
 	while (QR_Flag == false)
 	{
