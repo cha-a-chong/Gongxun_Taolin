@@ -104,6 +104,10 @@ bool Move_Line(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+	while(Apply_Chock == true)
+	{
+//		还在阻塞
+	}
 	return true;
 }
 bool Move_Left(u16 speed, u8 acc, u32 length)
@@ -137,6 +141,11 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+//	while(Apply_Chock == true)
+//	{
+////		还在阻塞
+//		;
+//	}
 	return true;
 }
 
@@ -171,6 +180,10 @@ bool Move_Back(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+	while(Apply_Chock == true)
+	{
+//		还在阻塞
+	}
 	return true;
 }
 
@@ -205,6 +218,10 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+	while(Apply_Chock == true)
+	{
+//		还在阻塞
+	}
 	return true;
 }
 
@@ -278,6 +295,10 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+	while(Apply_Chock == true)
+	{
+//		还在阻塞
+	}
 	return true;
 }
 //void Move_Right(u16 speed, u8 acc, u32 length) {
@@ -331,6 +352,10 @@ bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
+	while(Apply_Chock == true)
+	{
+//		还在阻塞
+	}
 	return true;
 }
 //void Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
@@ -743,6 +768,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 			if ((X_NOW - x_goal) < 0)
 			{
 				bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
+				HAL_Delay(5);
 				while (temp != true)
 				{
 					temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
@@ -752,6 +778,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 			else if ((X_NOW - x_goal) > 0)
 			{
 				bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
+				HAL_Delay(5);
 				while (temp != true)
 				{
 					temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
@@ -764,6 +791,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 			if (Y_NOW - y_goal < 0)
 			{
 				bool temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
+				HAL_Delay(5);
 				while (temp != true)
 				{
 					temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
@@ -773,6 +801,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 			else if (Y_NOW - y_goal > 0)
 			{
 				bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 5);
+				HAL_Delay(5);
 				while (temp != true)
 				{
 					temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);

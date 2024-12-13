@@ -274,7 +274,13 @@ int main(void)
 					// TODO:调试,根据TX2返回坐标点信息进行车身调�?,待物料稳定后抓取物料
 					// 这里是否�?要先根据Action进行�?次坐标的调整? x:150 y:1450
 					HAL_UART_Transmit(&huart10, (uint8_t*) "进入PID调节\n", sizeof("进入PID调节\n") - 1,0xffff);
-					Move_Action_Nopid_Left_Ctrl(150, 1450);
+					bool action_temp = Move_Action_Nopid_Left_Ctrl(150, 1450);
+					HAL_Delay(50);
+					while(action_temp == false)
+					{
+						HAL_Delay(10);
+						action_temp = Move_Action_Nopid_Left_Ctrl(150, 1450);
+					}
 					HAL_UART_Transmit(&huart10, (uint8_t*) "我调完辣\n", sizeof("我调完辣\n") - 1,0xffff);
 //					Frist_Grab_Wuliao();
 					flag = 2;
@@ -290,7 +296,7 @@ int main(void)
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
 					HAL_UART_Transmit(&huart10, (uint8_t*) "进入PID调节\n", sizeof("进入PID调节\n") - 1,0xffff);
-					bool action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					 action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
 					HAL_Delay(50);
 					while(action_temp == false)
 					{
@@ -344,7 +350,13 @@ int main(void)
 					break;
 				case 6:  //离开粗加工区，移到十字区
 					Move_TO_jianzhi3(9000, 4335);
-					Move_Action_Nopid_Left_Ctrl(170, 1860);
+					action_temp = Move_Action_Nopid_Left_Ctrl(170, 1860);
+					HAL_Delay(50);
+					while(action_temp == false)
+					{
+						HAL_Delay(10);
+						action_temp = Move_Action_Nopid_Left_Ctrl(170, 1860);
+					}
 					//TODO:在返回原料区之前，爪子首先要转过来正交于车身并且步进降到8600的位置，爪子张开，进行抓取物�?
 					Drop_Location_jiang(50, 50, 8600);
 					flag = 7;
@@ -367,7 +379,13 @@ int main(void)
 					Roll_Status();
 					HAL_Delay(50);
 					// 根据Action返回的坐标点进行校准
-					Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					HAL_Delay(50);
+					while(action_temp == false)
+					{
+						HAL_Delay(10);
+						action_temp = Move_Action_Nopid_Forward_Ctrl(160, 1070);
+					}
 					flag = 9;
 					HAL_UART_Transmit(&huart10, (uint8_t*) "flag = ", sizeof("flag = \n") - 1,0xffff);
 					HAL_UART_Transmit(&huart10, (uint8_t*)"9", sizeof("9") - 1,0xffff);
