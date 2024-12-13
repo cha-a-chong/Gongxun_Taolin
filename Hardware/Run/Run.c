@@ -89,7 +89,7 @@ bool Move_Line(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
@@ -122,7 +122,7 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
@@ -156,7 +156,7 @@ bool Move_Back(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
@@ -190,7 +190,7 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
@@ -262,7 +262,7 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 //		HAL_Delay(200);
@@ -315,7 +315,7 @@ bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(1000);
+	HAL_Delay(5);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 //		HAL_Delay(200);
@@ -715,55 +715,70 @@ void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 // }
 
 //这个函数是爪子朝向左边时，也就是在原料区进行ACTION调整的
-void Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
+bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 {
-	while (1)
-	{
 //		取X,Y差值
 		uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
 		uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
+		char X_send[8];
+		char Y_send[8];
+		sprintf(X_send, "%d", X_Diff);
+		sprintf(Y_send, "%d", Y_Diff);
 //		差值满足要求, 结束调节
+		if( X_Diff <  10 ){
+			HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
+			HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,0xffff);
+			HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+		}
+		if( Y_Diff <  10 ){
+			HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
+			HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,0xffff);
+			HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+		}
 		if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
-			return;
-
-		// 当前X坐标小于目标X
-		if ((X_NOW - x_goal) < 0)
+			return true;
+		if( X_Diff >=  10 )
 		{
-			bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
-			while (temp != true)
+			// 当前X坐标小于目标X
+			if ((X_NOW - x_goal) < 0)
 			{
-				temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
+				bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
+				while (temp != true)
+				{
+					temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
+				}
+			}
+			// 当前X坐标大于目标X
+			else if ((X_NOW - x_goal) > 0)
+			{
+				bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
+				while (temp != true)
+				{
+					temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
+				}
 			}
 		}
-		// 当前X坐标大于目标X
-		else if ((X_NOW - x_goal) > 0)
+		if ( Y_Diff >= 10 )
 		{
-			bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
-			while (temp != true)
+			// 当前Y坐标小于目标Y
+			if (Y_NOW - y_goal < 0)
 			{
-				temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
+				bool temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
+				while (temp != true)
+				{
+					temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
+				}
+			}
+			// 当前Y坐标大于目标Y
+			else if (Y_NOW - y_goal > 0)
+			{
+				bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 5);
+				while (temp != true)
+				{
+					temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);
+				}
 			}
 		}
-		// 当前Y坐标小于目标Y
-		if (Y_NOW - y_goal < 0)
-		{
-			bool temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
-			while (temp != true)
-			{
-				temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
-			}
-		}
-		// 当前Y坐标大于目标Y
-		else if (Y_NOW - y_goal > 0)
-		{
-			bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 5);
-			while (temp != true)
-			{
-				temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);
-			}
-		}
-
-	}
 }
 //这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
 bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)

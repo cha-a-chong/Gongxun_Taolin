@@ -64,7 +64,8 @@ void put_location(float x_goal,float y_goal);
 
 
 
-void Move_Action_Nopid_Left_Ctrl(float x_goal,float y_goal);
+//void Move_Action_Nopid_Left_Ctrl(float x_goal,float y_goal);
+bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal);
 //void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal);
 bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal);
 void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal);

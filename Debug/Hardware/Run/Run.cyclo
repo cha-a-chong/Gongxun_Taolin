@@ -22,7 +22,7 @@
 ../Hardware/Run/Run.c:574:6:Move_TO_cujiagongqu	2
 ../Hardware/Run/Run.c:587:6:Move_TO_jianzhi3	3
 ../Hardware/Run/Run.c:611:6:Move_TO_fanyuanliaoqu	2
-../Hardware/Run/Run.c:718:6:Move_Action_Nopid_Left_Ctrl	13
-../Hardware/Run/Run.c:769:6:Move_Action_Nopid_Forward_Ctrl	17
-../Hardware/Run/Run.c:846:6:Move_Action_Nopid_Right_Ctrl	11
-../Hardware/Run/Run.c:900:6:Move_Tx_Pid_Ctrl	11
+../Hardware/Run/Run.c:718:6:Move_Action_Nopid_Left_Ctrl	17
+../Hardware/Run/Run.c:784:6:Move_Action_Nopid_Forward_Ctrl	17
+../Hardware/Run/Run.c:861:6:Move_Action_Nopid_Right_Ctrl	11
+../Hardware/Run/Run.c:915:6:Move_Tx_Pid_Ctrl	11
