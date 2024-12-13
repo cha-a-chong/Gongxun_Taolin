@@ -126,7 +126,7 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
-	HAL_Delay(5);
+	HAL_Delay(10);
 	while(broadcast_flag == 0){
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
@@ -773,6 +773,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 				{
 					temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
 				}
+				return false;
 			}
 			// 当前X坐标大于目标X
 			else if ((X_NOW - x_goal) > 0)
@@ -783,6 +784,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 				{
 					temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
 				}
+				return false;
 			}
 		}
 		if ( Y_Diff >= 10 )
@@ -796,6 +798,7 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 				{
 					temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
 				}
+				return false;
 			}
 			// 当前Y坐标大于目标Y
 			else if (Y_NOW - y_goal > 0)
@@ -806,8 +809,10 @@ bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
 				{
 					temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);
 				}
+				return false;
 			}
 		}
+		return false;
 }
 //这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
 bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
@@ -940,66 +945,127 @@ void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal)
 
 /* Tx姿态调整 */
 //
-uint16_t time_tx = 0;
-void Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal)
+extern float x;
+extern float y;
+bool Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal)
 {
-
-	while (1)
+	uint16_t X_Diff = (uint16_t)ABS(x - TX_X_Goal);
+	uint16_t Y_Diff = (uint16_t)ABS(y - TX_Y_Goal);
+	char X_send[8];
+	char Y_send[8];
+	sprintf(X_send, "%d", X_Diff);
+	sprintf(Y_send, "%d", Y_Diff);
+	if((X_Diff < 5) && (Y_Diff < 5))
+		return true;
+	if(X_Diff >= 5)
 	{
-		if (TX_Y_out >= 0)
+		if ( (x - TX_X_Goal) >= 0)
 		{
-			bool temp = Move_Right(100, 120, TX_Y_out * 5);
+			bool temp = Move_Right(100, 120, TX_Y_out * 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Right(100, 120, TX_Y_out * 5);
+			temp = Move_Right(100, 120, TX_Y_out * 3);
 			}
-			// Move_Right(80, 80, TX_Y_out * 5);
-			// HAL_Delay(5);
+			return false;
 		}
-		else
+		else if ( (x - TX_X_Goal) < 0)
 		{
-			bool temp = Move_Left(100, 120, -TX_Y_out * 5);
+			bool temp = Move_Back(100, 120, TX_Y_out * 3);
+			HAL_Delay(5);
 			while (temp != true)
 			{
-				temp = Move_Left(100, 120, -TX_Y_out * 5);
+			temp = Move_Line(100, 120, TX_Y_out * 3);
 			}
-			// Move_Left(80, 80, -TX_Y_out * 5);
-			// HAL_Delay(5);
+			return false;
 		}
-
-		if (TX_X_out >= 0)
-		{
-			bool temp = Move_Back(100, 120, TX_X_out * 5);
-			while (temp != true)
-			{
-				temp = Move_Back(100, 120, TX_X_out * 5);
-			}
-			// Move_Back(80, 80, TX_X_out * 5);
-			// HAL_Delay(5);
-		}
-		else
-		{
-			bool temp = Move_Line(100, 120, -TX_X_out * 5);
-			while (temp != true)
-			{
-				temp = Move_Line(100, 120, -TX_X_out * 5);
-			}
-			// Move_Line(80, 80, -TX_X_out * 5);
-			// HAL_Delay(5);
-		}
-
-		if (ABS(Tx_NOW - 311.5) < 5 && ABS(Ty_NOW -125.5) < 5)
-		{
-			break;
-		}
-		//这里是防止调节时间过长所加的
-		// if(time_tx>=250)
-		// {time_tx=0;
-		// 	break;
-		// }
 	}
-
+	if(Y_Diff >= 5)
+	{
+		if ( (y - TX_Y_Goal) >= 0)
+		{
+			bool temp = Move_Right(100, 120, TX_Y_out * 3);
+			HAL_Delay(5);
+			while (temp != true)
+			{
+			temp = Move_Right(100, 120, TX_Y_out * 3);
+			}
+			return false;
+		}
+		else if ( (y - TX_Y_Goal) < 0)
+		{
+			bool temp = Move_Left(100, 120, TX_Y_out * 3);
+			HAL_Delay(5);
+			while (temp != true)
+			{
+			temp = Move_Left(100, 120, TX_Y_out * 3);
+			}
+			return false;
+		}
+	}
+	return false;
 }
+
+uint16_t time_tx = 0;
+//void Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal)
+//{
+//
+//	while (1)
+//	{
+//		if (TX_Y_out >= 0)
+//		{
+//			bool temp = Move_Right(100, 120, TX_Y_out * 5);
+//			while (temp != true)
+//			{
+//				temp = Move_Right(100, 120, TX_Y_out * 5);
+//			}
+//			// Move_Right(80, 80, TX_Y_out * 5);
+//			// HAL_Delay(5);
+//		}
+//		else
+//		{
+//			bool temp = Move_Left(100, 120, -TX_Y_out * 5);
+//			while (temp != true)
+//			{
+//				temp = Move_Left(100, 120, -TX_Y_out * 5);
+//			}
+//			// Move_Left(80, 80, -TX_Y_out * 5);
+//			// HAL_Delay(5);
+//		}
+//
+//		if (TX_X_out >= 0)
+//		{
+//			bool temp = Move_Back(100, 120, TX_X_out * 5);
+//			while (temp != true)
+//			{
+//				temp = Move_Back(100, 120, TX_X_out * 5);
+//			}
+//			// Move_Back(80, 80, TX_X_out * 5);
+//			// HAL_Delay(5);
+//		}
+//		else
+//		{
+//			bool temp = Move_Line(100, 120, -TX_X_out * 5);
+//			while (temp != true)
+//			{
+//				temp = Move_Line(100, 120, -TX_X_out * 5);
+//			}
+//			// Move_Line(80, 80, -TX_X_out * 5);
+//			// HAL_Delay(5);
+//		}
+//
+//		if (ABS(Tx_NOW - 311.5) < 5 && ABS(Ty_NOW -125.5) < 5)
+//		{
+//			break;
+//		}
+//		//这里是防止调节时间过长所加的
+//		// if(time_tx>=250)
+//		// {time_tx=0;
+//		// 	break;
+//		// }
+//	}
+//
+//}
 
 /* -----查询爪子处步进电机是否到位 -----*/
 //// 爪子处步进电机阻塞标志位

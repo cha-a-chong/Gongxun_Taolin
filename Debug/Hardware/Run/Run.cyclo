@@ -23,6 +23,6 @@
 ../Hardware/Run/Run.c:612:6:Move_TO_jianzhi3	3
 ../Hardware/Run/Run.c:636:6:Move_TO_fanyuanliaoqu	2
 ../Hardware/Run/Run.c:743:6:Move_Action_Nopid_Left_Ctrl	17
-../Hardware/Run/Run.c:813:6:Move_Action_Nopid_Forward_Ctrl	17
-../Hardware/Run/Run.c:890:6:Move_Action_Nopid_Right_Ctrl	11
-../Hardware/Run/Run.c:944:6:Move_Tx_Pid_Ctrl	11
+../Hardware/Run/Run.c:818:6:Move_Action_Nopid_Forward_Ctrl	17
+../Hardware/Run/Run.c:895:6:Move_Action_Nopid_Right_Ctrl	11
+../Hardware/Run/Run.c:950:6:Move_Tx_Pid_Ctrl	15

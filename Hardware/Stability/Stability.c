@@ -183,7 +183,8 @@ uint8_t FT_Servo_Put(uint8_t Servo_ID, uint8_t Pub_Number)
 	{
 		switch (Pub_Number)
 		{
-			case 1:WritePosEx(0, 1180, 0, 0);break;
+//			case 1:WritePosEx(0, 1180, 0, 0);break;
+			case 1:WritePosEx(0, 1135, 0, 0);break;
 			case 2:WritePosEx(0, 2245, 0, 0);break;
 			case 3:WritePosEx(0, 3292, 0, 0);break;
 		}

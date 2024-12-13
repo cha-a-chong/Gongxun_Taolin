@@ -6,4 +6,4 @@
 ../Hardware/Stability/Stability.c:163:9:FT_Servo_Zero	3
 ../Hardware/Stability/Stability.c:173:9:FT_Servo_Orth	1
 ../Hardware/Stability/Stability.c:180:9:FT_Servo_Put	8
-../Hardware/Stability/Stability.c:202:9:FT_Servo_Wait_Zero	3
+../Hardware/Stability/Stability.c:203:9:FT_Servo_Wait_Zero	3
