@@ -64,6 +64,12 @@ void put_location(float x_goal,float y_goal);
 
 
 
+void Tx_Move_Line(u16 speed, u8 acc, u32 length);
+void Tx_Move_Back(u16 speed, u8 acc, u32 length);
+void Tx_Move_Left(u16 speed, u8 acc, u32 length);
+void Tx_Move_Right(u16 speed, u8 acc, u32 length);
+
+
 //void Move_Action_Nopid_Left_Ctrl(float x_goal,float y_goal);
 bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal);
 //void Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal);

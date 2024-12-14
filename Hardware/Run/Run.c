@@ -9,6 +9,7 @@
 #include "Bool.h"
 #include "main.h"
 #include "stdio.h"
+#include "main.h"
 /* ------ Work Log -------- */
 /*
  TODO: 实现步进电机底盘运动的非阻塞函数
@@ -29,10 +30,8 @@ extern uint8_t broadcast_flag;
 
 int time5_jiancha = 0;
 
-uint8_t GetRxFlag(void)
-{
-	if (RxFlag == 1)
-	{
+uint8_t GetRxFlag(void) {
+	if (RxFlag == 1) {
 		RxFlag = 0;
 		return 1;
 	}
@@ -73,8 +72,52 @@ uint8_t GetRxFlag(void)
 ////	RxFlag = 0;·
 //	HAL_Delay(30);
 //}
-bool Move_Line(u16 speed, u8 acc, u32 length)
+void Tx_Move_Line(u16 speed, u8 acc, u32 length)
 {
+	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	HAL_Delay(5);
+	HAL_Delay(length/speed*20);
+}
+
+void Tx_Move_Back(u16 speed, u8 acc, u32 length) {
+	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	HAL_Delay(5);
+	HAL_Delay(length/speed*20);
+}
+
+void Tx_Move_Left(u16 speed, u8 acc, u32 length) {
+	Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 0, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	HAL_Delay(5);
+	HAL_Delay(length/speed*20);
+}
+void Tx_Move_Right(u16 speed, u8 acc, u32 length) {
+	Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(2, 1, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(3, 0, speed, acc, length, 0, true);
+	Emm_V5_Pos_Control(4, 1, speed, acc, length, 0, true);
+	// 触发多机同步开始运动
+	Emm_V5_Synchronous_motion();
+	HAL_Delay(5);
+	HAL_Delay(length/speed*20);
+}
+
+
+bool Move_Line(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -90,7 +133,7 @@ bool Move_Line(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(5);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
 		Emm_V5_Pos_Control(1, 0, speed, acc, length, 0, true);
@@ -104,14 +147,12 @@ bool Move_Line(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
-	while(Apply_Chock == true)
-	{
+	while (Apply_Chock == true) {
 //		还在阻塞
 	}
 	return true;
 }
-bool Move_Left(u16 speed, u8 acc, u32 length)
-{
+bool Move_Left(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -127,7 +168,7 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(10);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
 		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
@@ -149,8 +190,7 @@ bool Move_Left(u16 speed, u8 acc, u32 length)
 	return true;
 }
 
-bool Move_Back(u16 speed, u8 acc, u32 length)
-{
+bool Move_Back(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -166,7 +206,7 @@ bool Move_Back(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(5);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
 		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
@@ -180,15 +220,13 @@ bool Move_Back(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
-	while(Apply_Chock == true)
-	{
+	while (Apply_Chock == true) {
 //		还在阻塞
 	}
 	return true;
 }
 
-bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
-{
+bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -204,7 +242,7 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(5);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 		// 底盘步进电机移动
 		Emm_V5_Pos_Control(1, 1, speed, acc, length, 0, true);
@@ -218,8 +256,7 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
-	while(Apply_Chock == true)
-	{
+	while (Apply_Chock == true) {
 //		还在阻塞
 	}
 	return true;
@@ -263,8 +300,7 @@ bool Move_fanxuzhuan(u16 speed, u8 acc, u32 length)
 // 	HAL_Delay(30);
 // }
 
-bool Move_Right(u16 speed, u8 acc, u32 length)
-{
+bool Move_Right(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -280,7 +316,7 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(5);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 //		HAL_Delay(200);
 		// 底盘步进电机移动
@@ -295,8 +331,7 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
-	while(Apply_Chock == true)
-	{
+	while (Apply_Chock == true) {
 //		还在阻塞
 	}
 	return true;
@@ -320,8 +355,7 @@ bool Move_Right(u16 speed, u8 acc, u32 length)
 //	HAL_Delay(30);
 //}
 
-bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
-{
+bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length) {
 	// 查询当前是否有阻塞操作,有阻塞操作，结束函数并返回false
 	if (Choke_Flag == true)
 		return false;
@@ -337,7 +371,7 @@ bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
 	// 触发多机同步开始运动
 	Emm_V5_Synchronous_motion();
 	HAL_Delay(5);
-	while(broadcast_flag == 0){
+	while (broadcast_flag == 0) {
 		// 在broadcast_flag = 1时跳出去
 //		HAL_Delay(200);
 		// 底盘步进电机移动
@@ -352,8 +386,7 @@ bool Move_zhengxuzhuan(u16 speed, u8 acc, u32 length)
 	// 使能阻塞定时器中断
 	HAL_TIM_Base_Start_IT(&htim12);
 	Call_Flag = true;
-	while(Apply_Chock == true)
-	{
+	while (Apply_Chock == true) {
 //		还在阻塞
 	}
 	return true;
@@ -413,8 +446,7 @@ uint16_t High_Length = 0;
 //		Emm_V5_Stop_Now(5,0);
 //	HAL_Delay(30);
 //}
-void Drop_Location_jiang(u16 speed, u8 acc, u32 length)
-{
+void Drop_Location_jiang(u16 speed, u8 acc, u32 length) {
 	int time;
 	time = length / speed * 20;  //毫秒
 	Emm_V5_Pos_Control(5, 1, speed, acc, length, 1, 0);
@@ -425,8 +457,7 @@ void Drop_Location_jiang(u16 speed, u8 acc, u32 length)
 		;
 	HAL_Delay(30);
 }
-void Drop_Location_Sheng(u16 speed, u8 acc, u32 length)
-{
+void Drop_Location_Sheng(u16 speed, u8 acc, u32 length) {
 	int time;
 	time = length / speed * 20;  //毫秒
 	Emm_V5_Pos_Control(5, 1, speed, acc, length, 1, 0);
@@ -440,8 +471,7 @@ void Drop_Location_Sheng(u16 speed, u8 acc, u32 length)
 /////////////////////////////////////////////////////////////////////////////////////
 
 /***********将当前位置清零**********************/
-void motor_clear_all(void)
-{
+void motor_clear_all(void) {
 	Emm_V5_Reset_CurPos_To_Zero(1);
 	Emm_V5_Reset_CurPos_To_Zero(2);
 	Emm_V5_Reset_CurPos_To_Zero(3);
@@ -450,8 +480,7 @@ void motor_clear_all(void)
 /*********************************************/
 
 /******************______速度模式控制______***************************/
-void Move_Val_Line(u16 speed, u8 acc)
-{
+void Move_Val_Line(u16 speed, u8 acc) {
 	Emm_V5_Vel_Control(1, 0, speed, acc, true);
 	Emm_V5_Vel_Control(2, 0, speed, acc, true);
 	Emm_V5_Vel_Control(3, 0, speed, acc, true);
@@ -459,8 +488,7 @@ void Move_Val_Line(u16 speed, u8 acc)
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Back(u16 speed, u8 acc)
-{
+void Move_Val_Back(u16 speed, u8 acc) {
 	Emm_V5_Vel_Control(1, 1, speed, acc, true);
 	Emm_V5_Vel_Control(2, 1, speed, acc, true);
 	Emm_V5_Vel_Control(3, 1, speed, acc, true);
@@ -468,8 +496,7 @@ void Move_Val_Back(u16 speed, u8 acc)
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Left(u16 speed, u8 acc)
-{
+void Move_Val_Left(u16 speed, u8 acc) {
 	Emm_V5_Vel_Control(1, 1, speed, acc, true);
 	Emm_V5_Vel_Control(2, 0, speed, acc, true);
 	Emm_V5_Vel_Control(3, 1, speed, acc, true);
@@ -477,8 +504,7 @@ void Move_Val_Left(u16 speed, u8 acc)
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 
 }
-void Move_Val_Right(u16 speed, u8 acc)
-{
+void Move_Val_Right(u16 speed, u8 acc) {
 	Emm_V5_Vel_Control(1, 0, speed, acc, true);
 	Emm_V5_Vel_Control(2, 1, speed, acc, true);
 	Emm_V5_Vel_Control(3, 0, speed, acc, true);
@@ -487,8 +513,7 @@ void Move_Val_Right(u16 speed, u8 acc)
 
 }
 
-void Move_Stop(void)
-{
+void Move_Stop(void) {
 	Emm_V5_Stop_Now(1, true);
 	Emm_V5_Stop_Now(2, true);
 	Emm_V5_Stop_Now(3, true);
@@ -496,8 +521,7 @@ void Move_Stop(void)
 	Emm_V5_Synchronous_motion();  // 触发多机同步开始运动
 }
 /*********************_______END_________************************/
-void Move_GO(void)
-{
+void Move_GO(void) {
 	int time;
 	time = 5000 / RunSpeed * 20;  //毫秒
 	Emm_V5_Pos_Control(1, 1, 0, 0, 0, 0, true);
@@ -516,8 +540,7 @@ void Move_GO(void)
 
 }
 extern void Start(void);
-void Move_TO_Saomaqu(float Leftclk, float Lineclk)
-{
+void Move_TO_Saomaqu(float Leftclk, float Lineclk) {
 	Move_Left(RunSpeed, RunAcc, Leftclk);                             //爪子目前在最低处
 	HAL_Delay(20);
 //	HAL_Delay(yanshi);
@@ -533,113 +556,119 @@ void Move_TO_yuanliaoqu(float Lineclk) //物料区
 
 void Move_TO_jianzhi1(float Backclk, float fanzhuanclk) //粗加工区
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "我要后退喽\n", sizeof("我要后退喽\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "我要后退喽\n", sizeof("我要后退喽\n") - 1,
+//			0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	HAL_Delay(4500/100*20);
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
-	HAL_UART_Transmit(&huart10, (uint8_t*) "我要转45度辣\n", sizeof("我要转45度辣\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,
+//			0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "我要转45度辣\n", sizeof("我要转45度辣\n") - 1,
+//			0xffff);
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,
+//			0xffff);
 }
 
 void Move_TO_zancunqu(float Lineclk, float fanzhuanclk) //暂存区
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "向十字出发喽\n", sizeof("向十字出发喽\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "向十字出发喽\n", sizeof("向十字出发喽\n") - 1,
+//			0xffff);
 	bool temp = Move_Line(RunSpeed, RunAcc, Lineclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Line(RunSpeed, RunAcc, Lineclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "收到\n", sizeof("收到\n") - 1,0xffff);
-//	旋转
-	HAL_UART_Transmit(&huart10, (uint8_t*) "喜不喜欢我的反旋转\n", sizeof("喜不喜欢我的反旋转\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "收到\n", sizeof("收到\n") - 1, 0xffff);
+////	旋转
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "喜不喜欢我的反旋转\n",
+//			sizeof("喜不喜欢我的反旋转\n") - 1, 0xffff);
 	temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 	HAL_Delay(50);
 
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_fanxuzhuan(RunSpeed, RunAcc, fanzhuanclk);
 //		HAL_UART_Transmit(&huart10, (uint8_t*) "反选转的temp是false\n", sizeof("反选转的temp是false\n") - 1,0xffff);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "转个45度给你看看\n", sizeof("转个45度给你看看\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "转个45度给你看看\n",
+//			sizeof("转个45度给你看看\n") - 1, 0xffff);
 }
-
 
 void Move_TO_jianzhi2(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "向粗加工区出发\n", sizeof("向粗加工区出发\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "向粗加工区出发\n", sizeof("向粗加工区出发\n") - 1,
+//			0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 //		HAL_UART_Transmit(&huart10, (uint8_t*) "后退的temp是false\n", sizeof("后退的temp是false\n") - 1,0xffff);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "到位\n", sizeof("到位\n") - 1,0xffff);
-	HAL_UART_Transmit(&huart10, (uint8_t*) "来个正转给大家开开眼\n", sizeof("来个正转给大家开开眼\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "到位\n", sizeof("到位\n") - 1, 0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "来个正转给大家开开眼\n",
+//			sizeof("来个正转给大家开开眼\n") - 1, 0xffff);
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 //		HAL_UART_Transmit(&huart10, (uint8_t*) "正旋转的temp是false\n", sizeof("正旋转的temp是false\n") - 1,0xffff);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "转晕了家人们\n", sizeof("转晕了家人们\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "转晕了家人们\n", sizeof("转晕了家人们\n") - 1,
+//			0xffff);
 }
 void Move_TO_cujiagongqu(float Backclk) //粗加工区
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "粗加工区好难走啊\n", sizeof("粗加工区好难走啊\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "粗加工区好难走啊\n",
+//			sizeof("粗加工区好难走啊\n") - 1, 0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "你说的对\n", sizeof("你说的对\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "你说的对\n", sizeof("你说的对\n") - 1,
+//			0xffff);
 	// Move_Back(RunSpeed, RunAcc, Backclk);
 	// HAL_Delay(yanshi);
 }
 void Move_TO_jianzhi3(float Backclk, float Zhengzhuanclk) //从暂存区回到原料区
 {
 
-	HAL_UART_Transmit(&huart10, (uint8_t*) "到拐角了家人们\n", sizeof("到拐角了家人们\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "到拐角了家人们\n", sizeof("到拐角了家人们\n") - 1,
+//			0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "滴滴\n", sizeof("滴滴\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "滴滴\n", sizeof("滴滴\n") - 1, 0xffff);
 	// Move_Back(RunSpeed, RunAcc, Backclk);
 	// HAL_Delay(yanshi);
-	HAL_UART_Transmit(&huart10, (uint8_t*) "欸我再转\n", sizeof("欸我再转\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "欸我再转\n", sizeof("欸我再转\n") - 1,
+//			0xffff);
 	temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "差不多要到了吧\n", sizeof("差不多要到了吧\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "差不多要到了吧\n", sizeof("差不多要到了吧\n") - 1,
+//			0xffff);
 //	 Move_zhengxuzhuan(RunSpeed, RunAcc, Zhengzhuanclk);
 //	 HAL_Delay(yanshi);
 }
 void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "回到了梦开始的地方\n", sizeof("回到了梦开始的地方\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "回到了梦开始的地方\n",
+//			sizeof("回到了梦开始的地方\n") - 1, 0xffff);
 	bool temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	HAL_Delay(50);
-	while (temp != true)
-	{
+	while (temp != true) {
 		temp = Move_Back(RunSpeed, RunAcc, Backclk);
 	}
 	// Move_Back(RunSpeed, RunAcc, Lineclk);
@@ -740,149 +769,139 @@ void Move_TO_fanyuanliaoqu(float Backclk) //物料区
 // }
 
 //这个函数是爪子朝向左边时，也就是在原料区进行ACTION调整的
-bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal)
-{
+bool Move_Action_Nopid_Left_Ctrl(float x_goal, float y_goal) {
 //		取X,Y差值
-		uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
-		uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
-		char X_send[8];
-		char Y_send[8];
-		sprintf(X_send, "%d", X_Diff);
-		sprintf(Y_send, "%d", Y_Diff);
-//		差值满足要求, 结束调节
-		if( X_Diff <  10 ){
-			HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
-			HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,0xffff);
-			HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
-		}
-		if( Y_Diff <  10 ){
-			HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
-			HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,0xffff);
-			HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
-		}
-		if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
-			return true;
-		if( X_Diff >=  10 )
-		{
-			// 当前X坐标小于目标X
-			if ((X_NOW - x_goal) < 0)
-			{
-				bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
-				HAL_Delay(5);
-				while (temp != true)
-				{
-					temp = Move_Left(Action_Speed, Action_Acc,X_Diff * 5);
-				}
-				return false;
-			}
-			// 当前X坐标大于目标X
-			else if ((X_NOW - x_goal) > 0)
-			{
-				bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
-				HAL_Delay(5);
-				while (temp != true)
-				{
-					temp = Move_Right(Action_Speed, Action_Acc,X_Diff * 5);
-				}
-				return false;
-			}
-		}
-		if ( Y_Diff >= 10 )
-		{
-			// 当前Y坐标小于目标Y
-			if (Y_NOW - y_goal < 0)
-			{
-				bool temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
-				HAL_Delay(5);
-				while (temp != true)
-				{
-					temp = Move_Line(Action_Speed, Action_Acc,Y_Diff * 5);
-				}
-				return false;
-			}
-			// 当前Y坐标大于目标Y
-			else if (Y_NOW - y_goal > 0)
-			{
-				bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 5);
-				HAL_Delay(5);
-				while (temp != true)
-				{
-					temp = Move_Back(Action_Speed, Action_Acc,Y_Diff* 5);
-				}
-				return false;
-			}
-		}
-		return false;
-}
-//这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
-bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
-{
-	//ACTION调整
-	//		取X,Y差值
-	uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
-	uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
+	uint16_t X_Diff = (uint16_t) ABS(X_NOW - x_goal);
+	uint16_t Y_Diff = (uint16_t) ABS(Y_NOW - y_goal);
 	char X_send[8];
 	char Y_send[8];
 	sprintf(X_send, "%d", X_Diff);
 	sprintf(Y_send, "%d", Y_Diff);
-	if( X_Diff <  10 ){
-		HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
-		HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,0xffff);
-		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+//		差值满足要求, 结束调节
+	if (X_Diff < 10) {
+		HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ",
+				sizeof("X_Diff = ") - 2, 0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,
+				0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,
+				0xffff);
 	}
-	if( Y_Diff <  10 ){
-		HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ", sizeof("X_Diff = ") - 2,0xffff);
-		HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,0xffff);
-		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,0xffff);
+	if (Y_Diff < 10) {
+		HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ",
+				sizeof("X_Diff = ") - 2, 0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,
+				0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,
+				0xffff);
 	}
-	if(( X_Diff <  10 ) && ( Y_Diff < 10 ))
+	if ((X_Diff < 10) && (Y_Diff < 10))
+		return true;
+	if (X_Diff >= 10) {
+		// 当前X坐标小于目标X
+		if ((X_NOW - x_goal) < 0) {
+			bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
+			HAL_Delay(5);
+			while (temp != true) {
+				temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 5);
+			}
+			return false;
+		}
+		// 当前X坐标大于目标X
+		else if ((X_NOW - x_goal) > 0) {
+			bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
+			HAL_Delay(5);
+			while (temp != true) {
+				temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 5);
+			}
+			return false;
+		}
+	}
+	if (Y_Diff >= 10) {
+		// 当前Y坐标小于目标Y
+		if (Y_NOW - y_goal < 0) {
+			bool temp = Move_Line(Action_Speed, Action_Acc, Y_Diff * 5);
+			HAL_Delay(5);
+			while (temp != true) {
+				temp = Move_Line(Action_Speed, Action_Acc, Y_Diff * 5);
+			}
+			return false;
+		}
+		// 当前Y坐标大于目标Y
+		else if (Y_NOW - y_goal > 0) {
+			bool temp = Move_Back(Action_Speed, Action_Acc, Y_Diff * 5);
+			HAL_Delay(5);
+			while (temp != true) {
+				temp = Move_Back(Action_Speed, Action_Acc, Y_Diff * 5);
+			}
+			return false;
+		}
+	}
+	return false;
+}
+//这个函数是爪子朝向前方时，第一个十字和粗加工区进行ACTION调整
+bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal) {
+	//ACTION调整
+	//		取X,Y差值
+	uint16_t X_Diff = (uint16_t) ABS(X_NOW - x_goal);
+	uint16_t Y_Diff = (uint16_t) ABS(Y_NOW - y_goal);
+	char X_send[8];
+	char Y_send[8];
+	sprintf(X_send, "%d", X_Diff);
+	sprintf(Y_send, "%d", Y_Diff);
+	if (X_Diff < 10) {
+		HAL_UART_Transmit(&huart10, (uint8_t*) "X_Diff = ",
+				sizeof("X_Diff = ") - 2, 0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) X_send, sizeof(X_send) - 1,
+				0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,
+				0xffff);
+	}
+	if (Y_Diff < 10) {
+		HAL_UART_Transmit(&huart10, (uint8_t*) "Y_Diff = ",
+				sizeof("X_Diff = ") - 2, 0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) Y_send, sizeof(Y_send) - 1,
+				0xffff);
+		HAL_UART_Transmit(&huart10, (uint8_t*) "\n", sizeof("\n= ") - 1,
+				0xffff);
+	}
+	if ((X_Diff < 10) && (Y_Diff < 10))
 		return true;
 //	X差值不满足要求
-	if( X_Diff >=  10 )
-	{
+	if (X_Diff >= 10) {
 //		X与当前目标值差值小于0
-		if ((X_NOW - x_goal) < 0)
-		{
-			bool temp = Move_Line(Action_Speed, Action_Acc, X_Diff* 3);
+		if ((X_NOW - x_goal) < 0) {
+			bool temp = Move_Line(Action_Speed, Action_Acc, X_Diff * 3);
 			HAL_Delay(5);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Line(Action_Speed, Action_Acc, X_Diff * 3);
 			}
 			return false;
 		}
-			// 当前X坐标大于目标X
-		else if ((X_NOW - x_goal) > 0)
-		{
+		// 当前X坐标大于目标X
+		else if ((X_NOW - x_goal) > 0) {
 			bool temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 3);
 			HAL_Delay(5);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Back(Action_Speed, Action_Acc, X_Diff * 3);
 			}
 			return false;
 		}
 	}
-	if ( Y_Diff >= 10 )
-	{
+	if (Y_Diff >= 10) {
 		// 当前Y坐标小于目标Y
-		if ((Y_NOW - y_goal) < 0)
-		{
-			bool temp = Move_Right(Action_Speed, Action_Acc,Y_Diff * 3);
+		if ((Y_NOW - y_goal) < 0) {
+			bool temp = Move_Right(Action_Speed, Action_Acc, Y_Diff * 3);
 			HAL_Delay(5);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Right(Action_Speed, Action_Acc, Y_Diff * 3);
 			}
 			return false;
 		}
 		// 当前Y坐标大于目标Y
-		else if (Y_NOW - y_goal > 0)
-		{
+		else if (Y_NOW - y_goal > 0) {
 			bool temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 3);
 			HAL_Delay(5);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Left(Action_Speed, Action_Acc, Y_Diff * 3);
 			}
 			return false;
@@ -891,52 +910,40 @@ bool Move_Action_Nopid_Forward_Ctrl(float x_goal, float y_goal)
 	return false;
 }
 
-
-void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal)
-{
+void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal) {
 	//ACTION调整
 	//		取X,Y差值
-	uint16_t X_Diff = (uint16_t)ABS(X_NOW - x_goal);
-	uint16_t Y_Diff = (uint16_t)ABS(Y_NOW - y_goal);
-	while (1)
-	{
-		if (( X_Diff < 5 ) && ( Y_Diff < 5))
-		{
+	uint16_t X_Diff = (uint16_t) ABS(X_NOW - x_goal);
+	uint16_t Y_Diff = (uint16_t) ABS(Y_NOW - y_goal);
+	while (1) {
+		if ((X_Diff < 5) && (Y_Diff < 5)) {
 			break; /* 到达目标 */
 		}
 		// 当前X坐标小于目标X
-		if ((X_NOW - x_goal) < 0)
-		{
+		if ((X_NOW - x_goal) < 0) {
 			bool temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 13.8);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Right(Action_Speed, Action_Acc, X_Diff * 13.8);
 			}
 		}
 		// 当前X坐标大于目标X
-		else
-		{
+		else {
 			bool temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 13.8);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Left(Action_Speed, Action_Acc, X_Diff * 13.8);
 			}
 		}
 		// 当前Y坐标小于目标Y
-		if ((Y_NOW - y_goal) < 0)
-		{
-			bool temp = Move_Back(Action_Speed, Action_Acc,Y_Diff * 13.8);
-			while (temp != true)
-			{
+		if ((Y_NOW - y_goal) < 0) {
+			bool temp = Move_Back(Action_Speed, Action_Acc, Y_Diff * 13.8);
+			while (temp != true) {
 				temp = Move_Back(Action_Speed, Action_Acc, Y_Diff * 13.8);
 			}
 		}
 		// 当前Y坐标大于目标Y
-		else
-		{
+		else {
 			bool temp = Move_Line(Action_Speed, Action_Acc, Y_Diff * 13.8);
-			while (temp != true)
-			{
+			while (temp != true) {
 				temp = Move_Line(Action_Speed, Action_Acc, Y_Diff * 13.8);
 			}
 		}
@@ -947,64 +954,88 @@ void Move_Action_Nopid_Right_Ctrl(float x_goal, float y_goal)
 //
 extern float x;
 extern float y;
-bool Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal)
-{
-	uint16_t X_Diff = (uint16_t)ABS(x - TX_X_Goal);
-	uint16_t Y_Diff = (uint16_t)ABS(y - TX_Y_Goal);
+
+
+bool Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal) {
+	uint16_t X_Diff = (uint16_t) ABS(x - TX_X_Goal);
+	uint16_t Y_Diff = (uint16_t) ABS(y - TX_Y_Goal);
 	char X_send[8];
 	char Y_send[8];
 	sprintf(X_send, "%d", X_Diff);
 	sprintf(Y_send, "%d", Y_Diff);
-	if((X_Diff < 5) && (Y_Diff < 5))
+	if ((X_Diff < 5) && (Y_Diff < 5))
 		return true;
-	if(X_Diff >= 5)
-	{
-		if ( (x - TX_X_Goal) >= 0)
-		{
-			bool temp = Move_Right(100, 120, TX_Y_out * 3);
+	if (X_Diff >= 5) {
+		if ((x - TX_X_Goal) >= 0) {
+			Tx_Move_Back(100, 120, X_Diff );
 			HAL_Delay(5);
-			while (temp != true)
-			{
-			temp = Move_Right(100, 120, TX_Y_out * 3);
-			}
 			return false;
-		}
-		else if ( (x - TX_X_Goal) < 0)
-		{
-			bool temp = Move_Back(100, 120, TX_Y_out * 3);
+		} else if ((x - TX_X_Goal) < 0) {
+			 Tx_Move_Line(100, 120, X_Diff);
 			HAL_Delay(5);
-			while (temp != true)
-			{
-			temp = Move_Line(100, 120, TX_Y_out * 3);
-			}
+
 			return false;
 		}
 	}
-	if(Y_Diff >= 5)
-	{
-		if ( (y - TX_Y_Goal) >= 0)
-		{
-			bool temp = Move_Right(100, 120, TX_Y_out * 3);
+	if (Y_Diff >= 5) {
+		if ((y - TX_Y_Goal) >= 0) {
+			Tx_Move_Left(100, 120, Y_Diff );
 			HAL_Delay(5);
-			while (temp != true)
-			{
-			temp = Move_Right(100, 120, TX_Y_out * 3);
-			}
 			return false;
-		}
-		else if ( (y - TX_Y_Goal) < 0)
-		{
-			bool temp = Move_Left(100, 120, TX_Y_out * 3);
+
+		} else if ((y - TX_Y_Goal) < 0) {
+			Tx_Move_Right(100, 120, Y_Diff );
 			HAL_Delay(5);
-			while (temp != true)
-			{
-			temp = Move_Left(100, 120, TX_Y_out * 3);
-			}
 			return false;
 		}
 	}
 	return false;
 }
+//bool Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal) {
+//	uint16_t X_Diff = (uint16_t) ABS(x - TX_X_Goal);
+//	uint16_t Y_Diff = (uint16_t) ABS(y - TX_Y_Goal);
+//	char X_send[8];
+//	char Y_send[8];
+//	sprintf(X_send, "%d", X_Diff);
+//	sprintf(Y_send, "%d", Y_Diff);
+//	if ((X_Diff < 5) && (Y_Diff < 5))
+//		return true;
+//	if (X_Diff >= 5) {
+//		if ((x - TX_X_Goal) >= 0) {
+//			bool temp = Move_Back(100, 120, X_Diff * 3);
+//			HAL_Delay(5);
+//			while (temp != true) {
+//				temp = Move_Back(100, 120, X_Diff * 3);
+//			}
+//			return false;
+//		} else if ((x - TX_X_Goal) < 0) {
+//			bool temp = Move_Line(100, 120, X_Diff * 3);
+//			HAL_Delay(5);
+//			while (temp != true) {
+//				temp = Move_Line(100, 120, X_Diff * 3);
+//			}
+//			return false;
+//		}
+//	}
+//	if (Y_Diff >= 5) {
+//		if ((y - TX_Y_Goal) >= 0) {
+//			bool temp = Move_Right(100, 120, Y_Diff * 3);
+//			HAL_Delay(5);
+//			while (temp != true) {
+//				temp = Move_Right(100, 120, Y_Diff * 3);
+//			}
+//			return false;
+//		} else if ((y - TX_Y_Goal) < 0) {
+//			bool temp = Move_Left(100, 120, Y_Diff * 3);
+//			HAL_Delay(5);
+//			while (temp != true) {
+//				temp = Move_Left(100, 120, Y_Diff * 3);
+//			}
+//			return false;
+//		}
+//	}
+//	return false;
+//}
 
 uint16_t time_tx = 0;
 //void Move_Tx_Pid_Ctrl(float TX_X_Goal, float TX_Y_Goal)

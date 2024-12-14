@@ -21,12 +21,13 @@ char Y_pid[20];
 char TX2_X_Point[8];
 char TX2_Y_Point[8];
 char TX2_Color[2];
+char QR_Screen[7];
 
 uint8_t System_Flag = 0;
 uint8_t Joy_Flag = 0;
 uint8_t Ready_Flag = 0;
 // 接收二维码数据
-extern char QR_data[6];	//123+321+'\0'
+//extern char QR_data[6];	//123+321+'\0'
 // 接收点位数据
 //extern char RxBuffer[RXBUFFERSIZE];
 extern float x;
@@ -56,21 +57,20 @@ void Action_Show(void) {
 	HAL_UART_Transmit(&huart4, (uint8_t*) "\"\xff\xff\xff",
 			sizeof("\"\xff\xff\xff") - 1, 0xffff);
 }
-//extern int QR_data[6];
+extern int QR_data[6];
 void QR_Show(void) {
-//	for (int i = 0; i < 6; i++) {
-//		sprintf(&Y_pid[i], "%d", QR_data[i]);
-//	}
-//	HAL_UART_Transmit(&huart4, (uint8_t*) "QR.txt=\"", sizeof("QR.txt=\"") - 1,
-//			0xffff);
-//	HAL_UART_Transmit(&huart4, (uint8_t*) Y_pid, sizeof(Y_pid) - 1, 0xffff);
-//	HAL_UART_Transmit(&huart4, (uint8_t*) "\"\xff\xff\xff",
-//			sizeof("\"\xff\xff\xff") - 1, 0xffff);
-//	HAL_Delay(20);
+	for (int i = 0; i < 6; i++) {
+		sprintf(&QR_Screen[i], "%d", QR_data[i]);
+	}
+	HAL_UART_Transmit(&huart4, (uint8_t*) "QR.txt=\"", sizeof("QR.txt=\"") - 1,
+			0xffff );
+	HAL_UART_Transmit(&huart4, (uint8_t*) QR_Screen, sizeof(QR_Screen) - 1, 0xffff);
+	HAL_UART_Transmit(&huart4, (uint8_t*) "\"\xff\xff\xff",
+			sizeof("\"\xff\xff\xff") - 1, 0xffff);
 
-	 HAL_UART_Transmit(&huart4, (uint8_t*) "QR.txt=\"", sizeof("QR.txt=\"") - 1, 0xffff);
-	 HAL_UART_Transmit(&huart4, (uint8_t*) QR_data, sizeof(QR_data) - 1, 0xffff);
-	 HAL_UART_Transmit(&huart4, (uint8_t*) "\"\xff\xff\xff", sizeof("\"\xff\xff\xff") - 1, 0xffff);
+//	 HAL_UART_Transmit(&huart4, (uint8_t*) "QR.txt=\"", sizeof("QR.txt=\"") - 1, 0xffff);
+//	 HAL_UART_Transmit(&huart4, (uint8_t*) QR_data, sizeof(QR_data) - 1, 0xffff);
+//	 HAL_UART_Transmit(&huart4, (uint8_t*) "\"\xff\xff\xff", sizeof("\"\xff\xff\xff") - 1, 0xffff);
 
 }
 //extern float x;
@@ -123,7 +123,7 @@ void Point_Show(void) {
 		Check_flag = 1;
 	sprintf(TX2_X_Point, "%.2f", x);
 	sprintf(TX2_Y_Point, "%.2f", y);
-	sprintf(TX2_Color, "%d", flag);
+	sprintf(TX2_Color, "%d", colour);
 //	开始发送一帧点位数据
 	HAL_UART_Transmit(&huart4, (uint8_t*) "Point.txt=\"",sizeof("Point.txt=\"") - 1, 0xffff);
 //	if(Choke_Flag == true)

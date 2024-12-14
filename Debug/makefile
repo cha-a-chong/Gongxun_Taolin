@@ -46,34 +46,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Gongxun_Taolin
+BUILD_ARTIFACT_NAME := Gongxun_New
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Gongxun_Taolin.elf \
+Gongxun_New.elf \
 
 MAP_FILES += \
-Gongxun_Taolin.map \
+Gongxun_New.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Gongxun_Taolin.list \
+Gongxun_New.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Gongxun_Taolin.elf secondary-outputs
+main-build: Gongxun_New.elf secondary-outputs
 
 # Tool invocations
-Gongxun_Taolin.elf Gongxun_Taolin.map: $(OBJS) $(USER_OBJS) E:\STM32WorkSpace\Gongxun_Taolin\STM32H723VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Gongxun_Taolin.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"E:\STM32WorkSpace\Gongxun_Taolin\STM32H723VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Gongxun_Taolin.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Gongxun_New.elf Gongxun_New.map: $(OBJS) $(USER_OBJS) E:\STM32WorkSpace\Gongxun_Taolin\STM32H723VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Gongxun_New.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"E:\STM32WorkSpace\Gongxun_Taolin\STM32H723VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Gongxun_New.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -82,14 +82,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Gongxun_Taolin.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Gongxun_Taolin.list"
+Gongxun_New.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Gongxun_New.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Gongxun_Taolin.elf Gongxun_Taolin.list Gongxun_Taolin.map default.size.stdout
+	-$(RM) Gongxun_New.elf Gongxun_New.list Gongxun_New.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

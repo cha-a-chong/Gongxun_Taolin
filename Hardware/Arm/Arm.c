@@ -110,29 +110,29 @@ void catch_Second(uint16_t Pos1, uint16_t Pos2) //从地上抓取到车上
 extern int QR_Flag;
 void Start(void) //下降14000
 {
-	HAL_UART_Transmit(&huart10, (uint8_t*) "我来扫码辣\n", sizeof("我来扫码辣\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "我来扫码辣\n", sizeof("我来扫码辣\n") - 1,0xffff);
 	bool temp = Move_Line(RunSpeed, RunAcc, 8250);
 	HAL_Delay(50);
 	while(temp != true)
 	{
 		temp = Move_Line(RunSpeed, RunAcc, 8250);
 	}
-	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
+//	HAL_UART_Transmit(&huart10, (uint8_t*) "确认接收\n", sizeof("确认接收\n") - 1,0xffff);
 	//	先将爪子升起来，避免打到TX2或者物料盘
-//	Drop_Location_jiang(320, 160, 4000);
-	//	将舵机向外转动
-//	FT_Servo_Orth();
-//	Move_Arm(1, 500, 300); //爪子张开
-//	Move_Arm(6, 500, 300);
-//	Drop_Location_jiang(320, 160, 11000);
-	// 向前移动到扫码区域
-//	while (QR_Flag == false)
-//	{
-//		;  //等待扫码完成
-//	}
+	Drop_Location_jiang(320, 160, 4000);
+		//将舵机向外转动
+	FT_Servo_Orth();
+	Move_Arm(1, 500, 300); //爪子张开
+	Move_Arm(6, 900, 300);
+	Drop_Location_jiang(320, 160, 11000);
+	 //向前移动到扫码区域
+	while (QR_Flag == false)
+	{
+		;  //等待扫码完成
+	}
 	// 扫码完成后将爪子提起来
-//	Move_Arm(6, 900, 300);
-//	Drop_Location_jiang(320, 160, 8600);
+	Move_Arm(6, 900, 300);
+	Drop_Location_jiang(320, 160, 8600);
 	
 }
 void put(uint16_t Pos1, uint16_t Pos2) {
@@ -207,7 +207,7 @@ void Frist_Grab_Wuliao(void) {
 
 	// 设置物料抓取次数变量Grab_count
 	static uint8_t Grab_count = 0;
-	while (Grab_count < 3) {
+
 	//	抓取物料过程，置标志位,标志位为颜色
 	Match_Flag = QR_data[Grab_count];
 	//	if (QR_data[0] == colour && wuliao_falg == 0) {
@@ -225,14 +225,17 @@ void Frist_Grab_Wuliao(void) {
 		{
 			HAL_Delay(50);
 			TX_Flag = Move_Tx_Pid_Ctrl(tx_target, ty_target);
-
 		}
 	}
+
 	else
 		HAL_Delay(100);
 	//	抓取第一个物料
 	//	物料盘先转动到目标位置
 	// 函数位置似乎可以放一下,这个是非阻塞的函数,或许可以放在某些阻塞函数的前面
+	while (Grab_count < 3) {
+	if(QR_data[Grab_count]==colour)
+	{
 	FT_Servo_Put(0,Grab_count + 1);
 
 	Move_Arm(1, 50, 300);
@@ -262,6 +265,7 @@ void Frist_Grab_Wuliao(void) {
 	else
 		FT_Servo_Zero(1);
 	Grab_count += 1;
+	}
 	}
 	Grab_count = 0;
 }
